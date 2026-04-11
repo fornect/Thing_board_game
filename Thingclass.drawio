@@ -1,0 +1,204 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+  <diagram name="Страница-1" id="Rm_63nQNnAseC8XT79TC">
+    <mxGraphModel dx="1426" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-1" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="GameMaster" vertex="1">
+          <mxGeometry height="180" width="260" x="340" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-2" parent="svaIbMEOAWOHg9Y2UXw5-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- deck : Deck" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-3" parent="svaIbMEOAWOHg9Y2UXw5-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- discardPile : DiscardPile" vertex="1">
+          <mxGeometry height="26" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-4" parent="svaIbMEOAWOHg9Y2UXw5-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- currentPlayer : Player" vertex="1">
+          <mxGeometry height="26" width="260" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-5" parent="svaIbMEOAWOHg9Y2UXw5-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- turnDirection : Direction" vertex="1">
+          <mxGeometry height="26" width="260" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-6" parent="svaIbMEOAWOHg9Y2UXw5-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- gameActive : bool" vertex="1">
+          <mxGeometry height="26" width="260" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-7" parent="svaIbMEOAWOHg9Y2UXw5-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ StartGame()" vertex="1">
+          <mxGeometry height="20" width="260" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-8" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="Deck" vertex="1">
+          <mxGeometry height="162" width="260" x="40" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-9" parent="svaIbMEOAWOHg9Y2UXw5-8" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- cards : Stack&lt;Card&gt;" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-10" parent="svaIbMEOAWOHg9Y2UXw5-8" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- panicCardsSeparate : bool" vertex="1">
+          <mxGeometry height="26" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-11" parent="svaIbMEOAWOHg9Y2UXw5-8" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ Shuffle()" vertex="1">
+          <mxGeometry height="20" width="260" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-12" parent="svaIbMEOAWOHg9Y2UXw5-8" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ pop() : Card" vertex="1">
+          <mxGeometry height="20" width="260" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-13" parent="svaIbMEOAWOHg9Y2UXw5-8" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ push(card : Card)" vertex="1">
+          <mxGeometry height="20" width="260" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-72" parent="svaIbMEOAWOHg9Y2UXw5-8" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ voidDeck : bool" vertex="1">
+          <mxGeometry height="20" width="260" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-14" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="DiscardPile" vertex="1">
+          <mxGeometry height="96" width="260" x="20" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-15" parent="svaIbMEOAWOHg9Y2UXw5-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- cards : Stack&lt;Card&gt;" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-16" parent="svaIbMEOAWOHg9Y2UXw5-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ push(card : Card)" vertex="1">
+          <mxGeometry height="20" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-17" parent="svaIbMEOAWOHg9Y2UXw5-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ popAll() : Stack&lt;Card&gt;" vertex="1">
+          <mxGeometry height="20" width="260" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-69" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="svaIbMEOAWOHg9Y2UXw5-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-75" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.506;exitY=1.161;exitDx=0;exitDy=0;exitPerimeter=0;" target="svaIbMEOAWOHg9Y2UXw5-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-20" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="Player" vertex="1">
+          <mxGeometry height="220" width="260" x="680" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-21" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- name : string" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-22" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- role : Role {Human, Thing, Infected}" vertex="1">
+          <mxGeometry height="26" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-23" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- hand : List&lt;Card&gt; (max 4)" vertex="1">
+          <mxGeometry height="26" width="260" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-24" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- hasInfectionCard : bool" vertex="1">
+          <mxGeometry height="26" width="260" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-25" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- isAlive : bool" vertex="1">
+          <mxGeometry height="26" width="260" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-26" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ drawCard() : Card" vertex="1">
+          <mxGeometry height="20" width="260" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-74" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ useCard() : Card" vertex="1">
+          <mxGeometry height="20" width="260" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-27" parent="svaIbMEOAWOHg9Y2UXw5-20" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ discardCard(card : Card)" vertex="1">
+          <mxGeometry height="20" width="260" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-28" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="«abstract» Card" vertex="1">
+          <mxGeometry height="128" width="260" x="680" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-29" parent="svaIbMEOAWOHg9Y2UXw5-28" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- name : string" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-30" parent="svaIbMEOAWOHg9Y2UXw5-28" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- type : CardType {Event, Panic}" vertex="1">
+          <mxGeometry height="26" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-31" parent="svaIbMEOAWOHg9Y2UXw5-28" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- effectText : string" vertex="1">
+          <mxGeometry height="26" width="260" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-32" parent="svaIbMEOAWOHg9Y2UXw5-28" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ Apply(player, target?) : void" vertex="1">
+          <mxGeometry height="20" width="260" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-33" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="EventCard" vertex="1">
+          <mxGeometry height="76" width="470" x="510" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-34" parent="svaIbMEOAWOHg9Y2UXw5-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- subType : EventType {Infection, Flamethrower, Quarantine, BloodTest, Viski, Block}" vertex="1">
+          <mxGeometry height="26" width="470" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-37" parent="svaIbMEOAWOHg9Y2UXw5-33" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ ApplyEffect()" vertex="1">
+          <mxGeometry height="20" width="470" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-38" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="PanicCard" vertex="1">
+          <mxGeometry height="102" width="260" x="1000" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-39" parent="svaIbMEOAWOHg9Y2UXw5-38" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- immediatePlay : bool = true" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-40" parent="svaIbMEOAWOHg9Y2UXw5-38" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- discardAfterUse : bool = true" vertex="1">
+          <mxGeometry height="26" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-41" parent="svaIbMEOAWOHg9Y2UXw5-38" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ triggerImmediateEffect()" vertex="1">
+          <mxGeometry height="20" width="260" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-73" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-24" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="svaIbMEOAWOHg9Y2UXw5-45">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="60" as="sourcePoint" />
+            <mxPoint x="950" y="114" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-42" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="InfectionSystem" vertex="1">
+          <mxGeometry height="148" width="260" x="1070" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-43" parent="svaIbMEOAWOHg9Y2UXw5-42" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- infectionSource : Player" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-44" parent="svaIbMEOAWOHg9Y2UXw5-42" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- infectedPlayers : List&lt;Player&gt;" vertex="1">
+          <mxGeometry height="26" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-45" parent="svaIbMEOAWOHg9Y2UXw5-42" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- maxInfectionCards : int = 3" vertex="1">
+          <mxGeometry height="26" width="260" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-46" parent="svaIbMEOAWOHg9Y2UXw5-42" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ transferInfection(from, to) : bool" vertex="1">
+          <mxGeometry height="20" width="260" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-47" parent="svaIbMEOAWOHg9Y2UXw5-42" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ checkAllInfected() : bool" vertex="1">
+          <mxGeometry height="20" width="260" y="128" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-48" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="ExchangeSystem" vertex="1">
+          <mxGeometry height="116" width="260" x="380" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-49" parent="svaIbMEOAWOHg9Y2UXw5-48" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- mandatoryExchange : bool = true" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-50" parent="svaIbMEOAWOHg9Y2UXw5-48" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ ProposeExchange(giver, receiver, card)" vertex="1">
+          <mxGeometry height="20" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-51" parent="svaIbMEOAWOHg9Y2UXw5-48" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ RefuseExchange(player, reason) : bool" vertex="1">
+          <mxGeometry height="20" width="260" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-52" parent="svaIbMEOAWOHg9Y2UXw5-48" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ CompleteExchange(p1, p2, c1, c2)" vertex="1">
+          <mxGeometry height="20" width="260" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-53" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" value="VictorySystem" vertex="1">
+          <mxGeometry height="96" width="260" x="1000" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-54" parent="svaIbMEOAWOHg9Y2UXw5-53" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="- state : GameState {Playing, HumansWin, ThingWin}" vertex="1">
+          <mxGeometry height="26" width="260" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-55" parent="svaIbMEOAWOHg9Y2UXw5-53" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ checkVictory() : GameState" vertex="1">
+          <mxGeometry height="20" width="260" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-56" parent="svaIbMEOAWOHg9Y2UXw5-53" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" value="+ applyFlamethrower(target, source) : Result" vertex="1">
+          <mxGeometry height="20" width="260" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-63" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-7" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.547;exitY=1.013;exitDx=0;exitDy=0;exitPerimeter=0;" target="svaIbMEOAWOHg9Y2UXw5-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-66" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-4" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-68" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.006;entryY=-0.139;entryDx=0;entryDy=0;entryPerimeter=0;" target="svaIbMEOAWOHg9Y2UXw5-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-70" edge="1" parent="1" source="svaIbMEOAWOHg9Y2UXw5-38" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.538;entryY=1.1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.477;exitY=0.001;exitDx=0;exitDy=0;exitPerimeter=0;" target="svaIbMEOAWOHg9Y2UXw5-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="svaIbMEOAWOHg9Y2UXw5-71" edge="1" parent="1" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.526;entryY=0.97;entryDx=0;entryDy=0;entryPerimeter=0;" target="svaIbMEOAWOHg9Y2UXw5-32">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="470" as="sourcePoint" />
+            <mxPoint x="820" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
