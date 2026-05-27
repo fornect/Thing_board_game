@@ -1,0 +1,15 @@
+package enums
+
+enum class ActionType {
+    FLAMETHROWER,
+    ANALYSIS,
+    AXE,
+    SUSPICION,
+    WHISKEY,
+    PERSEVERANCE,
+    LOOK_AROUND,
+    SWAP_SEATS_NEIGHBOR,
+    SWAP_SEATS_ANY,
+    TEMPTATION,
+    INFECTION
+}
