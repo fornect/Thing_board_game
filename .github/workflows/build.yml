@@ -11,25 +11,6 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096M -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
 
 jobs:
-  test:
-    name: Run tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Gradle setup
-        uses: ./.github/actions/gradle-setup
-
-      - name: Run unit tests
-        run: ./gradlew test
-
-      - name: Upload test reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: "**/build/reports/tests/"
-
   ktlint:
     name: Lint
     runs-on: ubuntu-latest

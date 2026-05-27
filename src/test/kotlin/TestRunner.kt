@@ -52,6 +52,9 @@ fun main() {
 
     if (allPassed) {
         println("\nЗапуск GUI...")
-        gui.GameGUI()
+        val gui = GameGUI()
+        Thread.sleep(3000)
+        gui.dispose()
+        println("GUI успешно запущен и закрыт.")
     }
 }
