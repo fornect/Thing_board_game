@@ -1,7 +1,7 @@
 import data.*
+import gui.*
 import model.*
 import systems.*
-import gui.*
 
 fun main() {
     println("=".repeat(60))
