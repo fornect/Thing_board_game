@@ -1,10 +1,9 @@
 package systems
 
-import model.*
 import enums.*
+import model.*
 
 class SystemTest {
-
     fun test() {
         testHumansWinWithFlamethrower()
         testThingInfectsAllHumans()

@@ -4,7 +4,6 @@ import enums.ActionType
 import enums.Role
 
 class PlayerTest {
-
     fun test() {
         testDefaultRole()
         testDefaultAlive()

@@ -3,7 +3,6 @@ package model
 import enums.ActionType
 
 class DiscardPileTest {
-
     fun test() {
         testEmpty()
         testAddCard()

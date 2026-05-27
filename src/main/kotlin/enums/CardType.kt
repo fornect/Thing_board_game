@@ -4,5 +4,5 @@ enum class CardType {
     ACTION,
     DEFENSE,
     OBSTACLE,
-    PANIC
+    PANIC,
 }

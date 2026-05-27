@@ -1,11 +1,10 @@
 package data
 
-import model.Player
 import enums.Role
+import model.Player
 import java.io.File
 
 class DatabaseTest {
-
     fun test() {
         val testDbPath = "thing_game_test.db"
         File(testDbPath).delete() // Удаляем старую тестовую БД
@@ -35,10 +34,17 @@ class DatabaseTest {
     }
 
     private fun testSaveGame(db: GameDatabase) {
-        val players = listOf(
-            Player("Анна").apply { role = Role.HUMAN; isAlive = true },
-                             Player("Борис").apply { role = Role.THING; isAlive = true }
-        )
+        val players =
+            listOf(
+                Player("Анна").apply {
+                    role = Role.HUMAN
+                    isAlive = true
+                },
+                Player("Борис").apply {
+                    role = Role.THING
+                    isAlive = true
+                },
+            )
         db.saveGame("HUMANS", players, "Борис", 10)
         assert(db.getStats().totalGames >= 1) { "Игра должна быть сохранена" }
     }

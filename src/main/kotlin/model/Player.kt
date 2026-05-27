@@ -5,7 +5,7 @@ import java.util.UUID
 
 class Player(
     val name: String,
-    val id: String = UUID.randomUUID().toString()
+    val id: String = UUID.randomUUID().toString(),
 ) {
     var role: Role = Role.HUMAN
     val hand = mutableListOf<Card>()
@@ -25,11 +25,12 @@ class Player(
     fun hasCard(cardName: String): Boolean = hand.any { it.name == cardName }
 
     override fun toString(): String {
-        val icon = when (role) {
-            Role.HUMAN -> "👤"
-            Role.THING -> "👾"
-            Role.INFECTED -> "🧟"
-        }
+        val icon =
+            when (role) {
+                Role.HUMAN -> "👤"
+                Role.THING -> "👾"
+                Role.INFECTED -> "🧟"
+            }
         return "$icon $name"
     }
 }

@@ -6,7 +6,7 @@ data class PlayerStats(
     val name: String,
     var gamesPlayed: Int = 0,
     var wins: Int = 0,
-    var score: Int = 0
+    var score: Int = 0,
 )
 
 data class GameStats(
@@ -14,11 +14,10 @@ data class GameStats(
     val humanWins: Int = 0,
     val thingWins: Int = 0,
     val totalPlayers: Int = 0,
-    val topPlayers: List<Pair<String, Int>> = emptyList()
+    val topPlayers: List<Pair<String, Int>> = emptyList(),
 )
 
 class PlayerRegistry {
-
     private val players = mutableMapOf<String, PlayerStats>()
     private var totalGames = 0
     private var humanWins = 0
@@ -50,7 +49,10 @@ class PlayerRegistry {
         save()
     }
 
-    fun addScore(name: String, points: Int) {
+    fun addScore(
+        name: String,
+        points: Int,
+    ) {
         players[name]?.score = (players[name]?.score ?: 0) + points
         players[name]?.wins = (players[name]?.wins ?: 0) + 1
         save()
@@ -61,17 +63,18 @@ class PlayerRegistry {
     }
 
     fun getStats(): GameStats {
-        val topPlayers = players.values
-        .sortedByDescending { it.score }
-        .take(10)
-        .map { it.name to it.score }
+        val topPlayers =
+            players.values
+                .sortedByDescending { it.score }
+                .take(10)
+                .map { it.name to it.score }
 
         return GameStats(
             totalGames = totalGames,
             humanWins = humanWins,
             thingWins = thingWins,
             totalPlayers = players.size,
-            topPlayers = topPlayers
+            topPlayers = topPlayers,
         )
     }
 
@@ -97,23 +100,23 @@ class PlayerRegistry {
     private fun load() {
         if (!saveFile.exists()) return
 
-            try {
-                ObjectInputStream(FileInputStream(saveFile)).use { ois ->
-                    totalGames = ois.readInt()
-                    humanWins = ois.readInt()
-                    thingWins = ois.readInt()
-                    val count = ois.readInt()
+        try {
+            ObjectInputStream(FileInputStream(saveFile)).use { ois ->
+                totalGames = ois.readInt()
+                humanWins = ois.readInt()
+                thingWins = ois.readInt()
+                val count = ois.readInt()
 
-                    repeat(count) {
-                        val name = ois.readUTF()
-                        val gamesPlayed = ois.readInt()
-                        val wins = ois.readInt()
-                        val score = ois.readInt()
-                        players[name] = PlayerStats(name, gamesPlayed, wins, score)
-                    }
+                repeat(count) {
+                    val name = ois.readUTF()
+                    val gamesPlayed = ois.readInt()
+                    val wins = ois.readInt()
+                    val score = ois.readInt()
+                    players[name] = PlayerStats(name, gamesPlayed, wins, score)
                 }
-            } catch (e: IOException) {
-                // Файл повреждён
             }
+        } catch (e: IOException) {
+            // Файл повреждён
+        }
     }
 }

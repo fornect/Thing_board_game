@@ -2,5 +2,5 @@ package enums
 
 enum class ObstacleType {
     QUARANTINE,
-    BARRICADED_DOOR
+    BARRICADED_DOOR,
 }

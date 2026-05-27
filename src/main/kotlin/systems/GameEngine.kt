@@ -1,7 +1,7 @@
 package systems
 
-import model.*
 import enums.*
+import model.*
 import kotlin.random.Random
 
 class GameEngine {
@@ -19,23 +19,28 @@ class GameEngine {
         abstract val message: String
 
         data class Success(override val message: String, val affectedPlayers: List<Player> = emptyList()) : GameResult()
+
         data class Error(override val message: String) : GameResult()
+
         data class Panic(override val message: String) : GameResult()
+
         data class DefensePlayed(override val message: String, val drawnCard: Card?) : GameResult()
+
         data class ExchangeInfo(
             val player: Player,
             val neighbor: Player,
             val playerCards: List<Card>,
-            val neighborCards: List<Card>
+            val neighborCards: List<Card>,
         ) : GameResult() {
             override val message: String get() = "Выберите карты для обмена"
         }
+
         data class PanicExchange(
             override val message: String,
             val player: Player,
             val availableCards: List<Card>,
             val availableTargets: List<Player>,
-            val panicType: PanicType
+            val panicType: PanicType,
         ) : GameResult()
     }
 
@@ -51,56 +56,59 @@ class GameEngine {
         playerNames.forEach { players.add(Player(it)) }
 
         // ==================== КАРТЫ ДЕЙСТВИЙ (46 штук) ====================
-        val actionCards = listOf(
-            ActionCard("Огнемёт", "Убить соседнего игрока", ActionType.FLAMETHROWER),
-            ActionCard("Анализ", "Посмотреть руку соседа", ActionType.ANALYSIS),
-            ActionCard("Топор", "Снять карантин или дверь", ActionType.AXE),
-            ActionCard("Подозрение", "Взять карту соседа", ActionType.SUSPICION),
-            ActionCard("Виски", "Показать всем свои карты", ActionType.WHISKEY),
-            ActionCard("Упорство", "Взять 3 карты, оставить 1", ActionType.PERSEVERANCE),
-            ActionCard("Гляди по сторонам", "Сменить направление хода", ActionType.LOOK_AROUND),
-            ActionCard("Меняемся местами!", "Поменяться местами с соседом", ActionType.SWAP_SEATS_NEIGHBOR),
-            ActionCard("Сматывай удочки!", "Поменяться местами с любым", ActionType.SWAP_SEATS_ANY),
-            ActionCard("Соблазн", "Обмен картой, ход заканчивается", ActionType.TEMPTATION)
-        )
+        val actionCards =
+            listOf(
+                ActionCard("Огнемёт", "Убить соседнего игрока", ActionType.FLAMETHROWER),
+                ActionCard("Анализ", "Посмотреть руку соседа", ActionType.ANALYSIS),
+                ActionCard("Топор", "Снять карантин или дверь", ActionType.AXE),
+                ActionCard("Подозрение", "Взять карту соседа", ActionType.SUSPICION),
+                ActionCard("Виски", "Показать всем свои карты", ActionType.WHISKEY),
+                ActionCard("Упорство", "Взять 3 карты, оставить 1", ActionType.PERSEVERANCE),
+                ActionCard("Гляди по сторонам", "Сменить направление хода", ActionType.LOOK_AROUND),
+                ActionCard("Меняемся местами!", "Поменяться местами с соседом", ActionType.SWAP_SEATS_NEIGHBOR),
+                ActionCard("Сматывай удочки!", "Поменяться местами с любым", ActionType.SWAP_SEATS_ANY),
+                ActionCard("Соблазн", "Обмен картой, ход заканчивается", ActionType.TEMPTATION),
+            )
 
         // Добавляем действия в нужном количестве
-        repeat(6) { deck.add(actionCards[0].copy()) }  // Огнемёт ×6
-        repeat(4) { deck.add(actionCards[1].copy()) }  // Анализ ×4
-        repeat(4) { deck.add(actionCards[2].copy()) }  // Топор ×4
-        repeat(6) { deck.add(actionCards[3].copy()) }  // Подозрение ×6
-        repeat(3) { deck.add(actionCards[4].copy()) }  // Виски ×3
-        repeat(5) { deck.add(actionCards[5].copy()) }  // Упорство ×5
-        repeat(3) { deck.add(actionCards[6].copy()) }  // Гляди по сторонам ×3
-        repeat(5) { deck.add(actionCards[7].copy()) }  // Меняемся местами ×5
-        repeat(4) { deck.add(actionCards[8].copy()) }  // Сматывай удочки ×4
-        repeat(6) { deck.add(actionCards[9].copy()) }  // Соблазн ×6
+        repeat(6) { deck.add(actionCards[0].copy()) } // Огнемёт ×6
+        repeat(4) { deck.add(actionCards[1].copy()) } // Анализ ×4
+        repeat(4) { deck.add(actionCards[2].copy()) } // Топор ×4
+        repeat(6) { deck.add(actionCards[3].copy()) } // Подозрение ×6
+        repeat(3) { deck.add(actionCards[4].copy()) } // Виски ×3
+        repeat(5) { deck.add(actionCards[5].copy()) } // Упорство ×5
+        repeat(3) { deck.add(actionCards[6].copy()) } // Гляди по сторонам ×3
+        repeat(5) { deck.add(actionCards[7].copy()) } // Меняемся местами ×5
+        repeat(4) { deck.add(actionCards[8].copy()) } // Сматывай удочки ×4
+        repeat(6) { deck.add(actionCards[9].copy()) } // Соблазн ×6
         // Всего действий: 6+4+4+6+3+5+3+5+4+6 = 46 ✓
 
         // ==================== КАРТЫ ЗАЩИТЫ (17 штук) ====================
-        val defenseCards = listOf(
-            DefenseCard("Мне и здесь неплохо", "Отменить смену мест", DefenseType.IM_FINE_HERE),
-            DefenseCard("Нет уж, спасибо!", "Отказ от обмена", DefenseType.NO_THANKS),
-            DefenseCard("Мимо!", "Обмен переходит дальше", DefenseType.PASS),
-            DefenseCard("Никакого шашлыка!", "Отменить огнемёт", DefenseType.NO_BBQ),
-            DefenseCard("Страх", "Отказ от обмена + просмотр карты", DefenseType.FEAR)
-        )
+        val defenseCards =
+            listOf(
+                DefenseCard("Мне и здесь неплохо", "Отменить смену мест", DefenseType.IM_FINE_HERE),
+                DefenseCard("Нет уж, спасибо!", "Отказ от обмена", DefenseType.NO_THANKS),
+                DefenseCard("Мимо!", "Обмен переходит дальше", DefenseType.PASS),
+                DefenseCard("Никакого шашлыка!", "Отменить огнемёт", DefenseType.NO_BBQ),
+                DefenseCard("Страх", "Отказ от обмена + просмотр карты", DefenseType.FEAR),
+            )
 
-        repeat(3) { deck.add(defenseCards[0].copy()) }  // Мне и здесь неплохо ×3
-        repeat(4) { deck.add(defenseCards[1].copy()) }  // Нет уж, спасибо! ×4
-        repeat(4) { deck.add(defenseCards[2].copy()) }  // Мимо! ×4
-        repeat(3) { deck.add(defenseCards[3].copy()) }  // Никакого шашлыка! ×3
-        repeat(3) { deck.add(defenseCards[4].copy()) }  // Страх ×3
+        repeat(3) { deck.add(defenseCards[0].copy()) } // Мне и здесь неплохо ×3
+        repeat(4) { deck.add(defenseCards[1].copy()) } // Нет уж, спасибо! ×4
+        repeat(4) { deck.add(defenseCards[2].copy()) } // Мимо! ×4
+        repeat(3) { deck.add(defenseCards[3].copy()) } // Никакого шашлыка! ×3
+        repeat(3) { deck.add(defenseCards[4].copy()) } // Страх ×3
         // Всего защит: 3+4+4+3+3 = 17 ✓
 
         // ==================== КАРТЫ ПРЕПЯТСТВИЙ (5 штук) ====================
-        val obstacleCards = listOf(
-            ObstacleCard("Заколоченная дверь", "Блок между игроками", ObstacleType.BARRICADED_DOOR),
-            ObstacleCard("Карантин", "Блокирует игрока на 3 хода", ObstacleType.QUARANTINE)
-        )
+        val obstacleCards =
+            listOf(
+                ObstacleCard("Заколоченная дверь", "Блок между игроками", ObstacleType.BARRICADED_DOOR),
+                ObstacleCard("Карантин", "Блокирует игрока на 3 хода", ObstacleType.QUARANTINE),
+            )
 
-        repeat(3) { deck.add(obstacleCards[0].copy()) }  // Заколоченная дверь ×3
-        repeat(2) { deck.add(obstacleCards[1].copy()) }  // Карантин ×2
+        repeat(3) { deck.add(obstacleCards[0].copy()) } // Заколоченная дверь ×3
+        repeat(2) { deck.add(obstacleCards[1].copy()) } // Карантин ×2
         // Всего препятствий: 3+2 = 5 ✓
 
         // ==================== КАРТА НЕЧТО (1 штука) ====================
@@ -143,20 +151,21 @@ class GameEngine {
         repeat(20) { deck.add(ActionCard("Заражение!", "Заразить при обмене", ActionType.INFECTION).copy()) }
 
         // Карты паник (24 штуки = 12 × 2)
-        val panicCards = listOf(
-            PanicCard("Старые веревки", "Все карантины сбрасываются", PanicType.OLD_ROPE),
-            PanicCard("Свидание в слепую", "Обмен карты с колодой", PanicType.BLIND_DATE),
-            PanicCard("Раз, два...", "Обмен с третьим игроком", PanicType.ONE_TWO),
-            PanicCard("Давай дружить?", "Обмен картами с любым", PanicType.LET_BE_FRIENDS),
-            PanicCard("Только между нами", "Показать карты соседу", PanicType.JUST_BETWEEN_US),
-            PanicCard("Без паники!", "Ничего не происходит", PanicType.NO_PANIC),
-            PanicCard("Цепная реакция", "Все передают карту", PanicType.CHAIN_REACTION),
-            PanicCard("...Три, четыре...", "Все двери сбрасываются", PanicType.THREE_FOUR),
-            PanicCard("И вы это называете вечеринкой", "Сброс всего + обмен местами", PanicType.CALL_THAT_PARTY),
-            PanicCard("Убирайся прочь!", "Обмен местами с любым", PanicType.GET_OUT),
-            PanicCard("Забывчивость", "Сбросить 3, взять 3", PanicType.FORGETFULNESS),
-            PanicCard("Уупс!", "Показать все свои карты", PanicType.OOPS)
-        )
+        val panicCards =
+            listOf(
+                PanicCard("Старые веревки", "Все карантины сбрасываются", PanicType.OLD_ROPE),
+                PanicCard("Свидание в слепую", "Обмен карты с колодой", PanicType.BLIND_DATE),
+                PanicCard("Раз, два...", "Обмен с третьим игроком", PanicType.ONE_TWO),
+                PanicCard("Давай дружить?", "Обмен картами с любым", PanicType.LET_BE_FRIENDS),
+                PanicCard("Только между нами", "Показать карты соседу", PanicType.JUST_BETWEEN_US),
+                PanicCard("Без паники!", "Ничего не происходит", PanicType.NO_PANIC),
+                PanicCard("Цепная реакция", "Все передают карту", PanicType.CHAIN_REACTION),
+                PanicCard("...Три, четыре...", "Все двери сбрасываются", PanicType.THREE_FOUR),
+                PanicCard("И вы это называете вечеринкой", "Сброс всего + обмен местами", PanicType.CALL_THAT_PARTY),
+                PanicCard("Убирайся прочь!", "Обмен местами с любым", PanicType.GET_OUT),
+                PanicCard("Забывчивость", "Сбросить 3, взять 3", PanicType.FORGETFULNESS),
+                PanicCard("Уупс!", "Показать все свои карты", PanicType.OOPS),
+            )
 
         repeat(2) { panicCards.forEach { deck.add(it.copy()) } }
 
@@ -182,7 +191,9 @@ class GameEngine {
             if (discardPile.isNotEmpty()) {
                 deck.addAll(discardPile.takeAll())
                 deck.shuffle()
-            } else return GameResult.Error("Колода пуста!")
+            } else {
+                return GameResult.Error("Колода пуста!")
+            }
         }
 
         val card = deck.draw() ?: return GameResult.Error("Не удалось взять карту")
@@ -201,10 +212,16 @@ class GameEngine {
     }
 
     // Добавить новый метод:
-    private fun executePanic(card: PanicCard, player: Player): GameResult {
+    private fun executePanic(
+        card: PanicCard,
+        player: Player,
+    ): GameResult {
         return when (card.subType) {
             PanicType.OLD_ROPE -> {
-                players.forEach { it.hasQuarantine = false; it.quarantineTurns = 0 }
+                players.forEach {
+                    it.hasQuarantine = false
+                    it.quarantineTurns = 0
+                }
                 GameResult.Panic("😱 ПАНИКА! Старые веревки — все карантины сброшены!")
             }
 
@@ -224,7 +241,7 @@ class GameEngine {
                             player,
                             player.hand.filter { it.name != "НЕЧТО" },
                             listOf(third),
-                            PanicType.ONE_TWO
+                            PanicType.ONE_TWO,
                         )
                     }
                 }
@@ -239,7 +256,7 @@ class GameEngine {
                         player,
                         player.hand.filter { it.name != "НЕЧТО" },
                         targets,
-                        PanicType.LET_BE_FRIENDS
+                        PanicType.LET_BE_FRIENDS,
                     )
                 }
                 GameResult.Panic("😱 ПАНИКА! Давай дружить? — нет доступных игроков")
@@ -256,10 +273,17 @@ class GameEngine {
 
             PanicType.CHAIN_REACTION -> {
                 val alive = getAlivePlayers()
-                val cards = alive.map { p ->
-                    val av = p.hand.filter { it.name != "НЕЧТО" && it.name != "Заражение!" }
-                    if (av.isNotEmpty()) { val c = av.random(); p.hand.remove(c); c } else null
-                }
+                val cards =
+                    alive.map { p ->
+                        val av = p.hand.filter { it.name != "НЕЧТО" && it.name != "Заражение!" }
+                        if (av.isNotEmpty()) {
+                            val c = av.random()
+                            p.hand.remove(c)
+                            c
+                        } else {
+                            null
+                        }
+                    }
                 for (i in alive.indices) {
                     cards[i]?.let { alive[(i + 1) % alive.size].hand.add(it) }
                 }
@@ -272,7 +296,10 @@ class GameEngine {
             }
 
             PanicType.CALL_THAT_PARTY -> {
-                players.forEach { it.hasQuarantine = false; it.quarantineTurns = 0 }
+                players.forEach {
+                    it.hasQuarantine = false
+                    it.quarantineTurns = 0
+                }
                 barricadedDoors.clear()
 
                 // Меняем игроков попарно, начиная с того кто вытянул панику
@@ -301,7 +328,7 @@ class GameEngine {
                         player,
                         emptyList(),
                         targets,
-                        PanicType.GET_OUT
+                        PanicType.GET_OUT,
                     )
                 }
                 GameResult.Panic("😱 ПАНИКА! Убирайся прочь! — нет доступных игроков")
@@ -310,7 +337,11 @@ class GameEngine {
             PanicType.FORGETFULNESS -> {
                 repeat(3) {
                     val av = player.hand.filter { it.name != "НЕЧТО" }
-                    if (av.isNotEmpty()) { val c = av.random(); player.hand.remove(c); discardPile.add(c) }
+                    if (av.isNotEmpty()) {
+                        val c = av.random()
+                        player.hand.remove(c)
+                        discardPile.add(c)
+                    }
                 }
                 repeat(3) {
                     drawCardSilent()?.let { player.hand.add(it) }
@@ -324,7 +355,11 @@ class GameEngine {
         }
     }
 
-    fun playCard(player: Player, card: Card, target: Player?): GameResult {
+    fun playCard(
+        player: Player,
+        card: Card,
+        target: Player?,
+    ): GameResult {
         val index = player.hand.indexOfFirst { it.name == card.name && it.type == card.type }
         if (index == -1) return GameResult.Error("Карта не найдена")
 
@@ -345,20 +380,29 @@ class GameEngine {
 
         return when (card.name) {
             "Огнемёт" -> useFlamethrower(player, target)
+
             "Анализ" -> useAnalysis(player, target)
+
             "Топор" -> useAxe(player, target)
+
             "Подозрение" -> useSuspicion(player, target)
+
             "Виски" -> useWhiskey(player)
+
             "Упорство" -> GameResult.Success("💪 Упорство сыграно")
+
             "Гляди по сторонам" -> useLookAround(player)
+
             "Меняемся местами!" -> {
                 if (target != null) swapPlayers(player, target)
                 GameResult.Success("💺 Обмен местами с ${target?.name}")
             }
+
             "Сматывай удочки!" -> {
                 if (target != null) swapPlayers(player, target)
                 GameResult.Success("💨 Обмен местами с ${target?.name}")
             }
+
             "Соблазн" -> {
                 endTurnEarlyFlag = true
                 if (target != null) {
@@ -366,9 +410,14 @@ class GameEngine {
                     val p2c = target.hand.filter { it.name != "НЕЧТО" }
                     if (p1c.isNotEmpty() && p2c.isNotEmpty()) {
                         GameResult.ExchangeInfo(player, target, p1c, p2c)
-                    } else GameResult.Error("Нет карт для обмена")
-                } else GameResult.Error("Нет цели")
+                    } else {
+                        GameResult.Error("Нет карт для обмена")
+                    }
+                } else {
+                    GameResult.Error("Нет цели")
+                }
             }
+
             "Карантин" -> {
                 if (target != null) {
                     target.hasQuarantine = true
@@ -376,24 +425,34 @@ class GameEngine {
                 }
                 GameResult.Success("🦠 Карантин на ${target?.name}")
             }
+
             "Заколоченная дверь" -> {
                 if (target != null) barricadedDoors.add(player to target)
                 GameResult.Success("🚪 Дверь установлена")
             }
+
             else -> GameResult.Success("✅ ${card.name} сыграна")
         }
     }
 
-    fun discardCard(player: Player, card: Card): GameResult {
+    fun discardCard(
+        player: Player,
+        card: Card,
+    ): GameResult {
         if (card.name == "НЕЧТО") return GameResult.Error("Нельзя сбросить НЕЧТО!")
         return if (player.hand.remove(card)) {
             discardPile.add(card)
             GameResult.Success("🗑️ ${player.name} сбросил ${card.name}")
-        } else GameResult.Error("Ошибка сброса")
+        } else {
+            GameResult.Error("Ошибка сброса")
+        }
     }
 
     // Метод для тихого сброса (Упорство)
-    fun discardCardSilent(player: Player, card: Card) {
+    fun discardCardSilent(
+        player: Player,
+        card: Card,
+    ) {
         if (player.hand.remove(card)) {
             discardPile.add(card)
         }
@@ -409,9 +468,13 @@ class GameEngine {
 
         if (player.hasQuarantine) return GameResult.Error("🦠 Вы на карантине!")
         if (neighbor.hasQuarantine) return GameResult.Error("🦠 Сосед на карантине!")
-        if (player.hasBarricade) { player.hasBarricade = false; return GameResult.Error("🧱 Баррикада!") }
-        if (barricadedDoors.any { (a, b) -> (a == player && b == neighbor) || (a == neighbor && b == player) })
+        if (player.hasBarricade) {
+            player.hasBarricade = false
+            return GameResult.Error("🧱 Баррикада!")
+        }
+        if (barricadedDoors.any { (a, b) -> (a == player && b == neighbor) || (a == neighbor && b == player) }) {
             return GameResult.Error("🚪 Заколоченная дверь!")
+        }
 
         val p1Cards = player.hand.filter { it.name != "НЕЧТО" && (player.role == Role.THING || it.name != "Заражение!") }
         val p2Cards = neighbor.hand.filter { it.name != "НЕЧТО" && (neighbor.role == Role.THING || it.name != "Заражение!") }
@@ -422,7 +485,11 @@ class GameEngine {
         return GameResult.ExchangeInfo(player, neighbor, p1Cards, p2Cards)
     }
 
-    fun handleDefense(defender: Player, attacker: Player, offeredCard: Card): GameResult {
+    fun handleDefense(
+        defender: Player,
+        attacker: Player,
+        offeredCard: Card,
+    ): GameResult {
         val defenseCards = listOf("Страх", "Нет уж, спасибо!", "Мимо!", "Мне и здесь неплохо", "Никакого шашлыка!")
         val defenseCard = defender.hand.find { it.name in defenseCards }
 
@@ -435,14 +502,19 @@ class GameEngine {
 
             return GameResult.DefensePlayed(
                 "🛡️ ${defender.name} сыграл ${defenseCard.name}" +
-                        if (newCard != null) " и взял карту: ${newCard.name}" else "",
-                newCard
+                    if (newCard != null) " и взял карту: ${newCard.name}" else "",
+                newCard,
             )
         }
         return GameResult.Error("Нет защиты")
     }
 
-    fun performExchange(player1: Player, player2: Player, card1: Card, card2: Card): GameResult {
+    fun performExchange(
+        player1: Player,
+        player2: Player,
+        card1: Card,
+        card2: Card,
+    ): GameResult {
         if (!player1.hand.remove(card1)) return GameResult.Error("Карта не найдена")
         if (!player2.hand.remove(card2)) return GameResult.Error("Карта не найдена")
 
@@ -504,29 +576,41 @@ class GameEngine {
     }
 
     fun getTurnNumber(): Int = turnNumber
+
     fun getDirection(): Int = direction
+
     fun getSkipActionPhase(): Boolean = skipActionPhase
 
     fun getPlayableCards(player: Player): List<Card> =
         player.hand.filter { it.name != "НЕЧТО" && it.name != "Заражение!" && it.type != CardType.DEFENSE }
 
-    fun getDiscardableCards(player: Player): List<Card> =
-        player.hand.filter { it.name != "НЕЧТО" }
+    fun getDiscardableCards(player: Player): List<Card> = player.hand.filter { it.name != "НЕЧТО" }
 
-    fun getTargets(player: Player, cardName: String): List<Player> {
+    fun getTargets(
+        player: Player,
+        cardName: String,
+    ): List<Player> {
         return when (cardName) {
             "Топор" -> getAlivePlayers().filter { it != player && isAdjacent(player, it) } + listOf(player)
+
             "Карантин" -> getAlivePlayers().filter { it != player && isAdjacent(player, it) && !it.hasQuarantine } + listOf(player)
+
             "Огнемёт", "Анализ", "Подозрение", "Заколоченная дверь", "Меняемся местами!", "Соблазн" ->
                 getAlivePlayers().filter { it != player && isAdjacent(player, it) && !it.hasQuarantine }
+
             "Сматывай удочки!" -> getAlivePlayers().filter { it != player && !it.hasQuarantine }
+
             else -> getAlivePlayers().filter { it != player && !it.hasQuarantine }
         }
     }
 
-    fun isAdjacent(p1: Player, p2: Player): Boolean {
+    fun isAdjacent(
+        p1: Player,
+        p2: Player,
+    ): Boolean {
         val alive = getAlivePlayers()
-        val idx1 = alive.indexOf(p1); val idx2 = alive.indexOf(p2)
+        val idx1 = alive.indexOf(p1)
+        val idx2 = alive.indexOf(p2)
         if (idx1 == -1 || idx2 == -1) return false
         if (alive.size <= 2) return true
         val (left, right) = getNeighborIndices(idx1, alive.size)
@@ -537,7 +621,10 @@ class GameEngine {
 
     private fun getAlivePlayers(): List<Player> = players.filter { it.isAlive }
 
-    private fun getNeighborIndices(index: Int, total: Int): Pair<Int, Int> {
+    private fun getNeighborIndices(
+        index: Int,
+        total: Int,
+    ): Pair<Int, Int> {
         if (total == 1) return Pair(0, 0)
         if (total == 2) return Pair((index + 1) % total, (index + 1) % total)
         return Pair((index - 1 + total) % total, (index + 1) % total)
@@ -549,19 +636,34 @@ class GameEngine {
         currentPlayerIndex += direction
         val alive = getAlivePlayers()
         if (alive.isEmpty()) return
-        if (currentPlayerIndex >= alive.size) { currentPlayerIndex = 0; turnNumber++ }
-        if (currentPlayerIndex < 0) { currentPlayerIndex = alive.size - 1; turnNumber++ }
+        if (currentPlayerIndex >= alive.size) {
+            currentPlayerIndex = 0
+            turnNumber++
+        }
+        if (currentPlayerIndex < 0) {
+            currentPlayerIndex = alive.size - 1
+            turnNumber++
+        }
     }
 
-    fun swapPlayers(p1: Player, p2: Player) {
+    fun swapPlayers(
+        p1: Player,
+        p2: Player,
+    ) {
         val alive = getAlivePlayers()
-        val idx1 = alive.indexOf(p1); val idx2 = alive.indexOf(p2)
+        val idx1 = alive.indexOf(p1)
+        val idx2 = alive.indexOf(p2)
         if (idx1 == -1 || idx2 == -1) return
         val newAlive = alive.toMutableList()
-        newAlive[idx1] = p2; newAlive[idx2] = p1
-        players.clear(); players.addAll(newAlive)
-        if (currentPlayerIndex == idx1) currentPlayerIndex = idx2
-        else if (currentPlayerIndex == idx2) currentPlayerIndex = idx1
+        newAlive[idx1] = p2
+        newAlive[idx2] = p1
+        players.clear()
+        players.addAll(newAlive)
+        if (currentPlayerIndex == idx1) {
+            currentPlayerIndex = idx2
+        } else if (currentPlayerIndex == idx2) {
+            currentPlayerIndex = idx1
+        }
     }
 
     private fun discardDownToFour(player: Player) {
@@ -577,14 +679,19 @@ class GameEngine {
             if (discardPile.isNotEmpty()) {
                 deck.addAll(discardPile.takeAll())
                 deck.shuffle()
-            } else return null
+            } else {
+                return null
+            }
         }
         return deck.draw()
     }
 
     // ==================== КАРТЫ ====================
 
-    private fun useFlamethrower(owner: Player, target: Player?): GameResult {
+    private fun useFlamethrower(
+        owner: Player,
+        target: Player?,
+    ): GameResult {
         if (target == null) return GameResult.Error("Нет цели")
         if (!isAdjacent(owner, target)) return GameResult.Error("Не сосед")
         if (target.hasQuarantine) return GameResult.Error("Цель на карантине")
@@ -596,32 +703,45 @@ class GameEngine {
         return GameResult.Success("💀 ${target.name} сгорел! (${target.role})", listOf(target))
     }
 
-    private fun useAnalysis(owner: Player, target: Player?): GameResult {
+    private fun useAnalysis(
+        owner: Player,
+        target: Player?,
+    ): GameResult {
         if (target == null) return GameResult.Error("Нет цели")
         return GameResult.Success("🔍 Рука ${target.name}: ${target.hand.joinToString { it.name }}")
     }
 
-    private fun useAxe(owner: Player, target: Player?): GameResult {
+    private fun useAxe(
+        owner: Player,
+        target: Player?,
+    ): GameResult {
         if (target != null && target.hasQuarantine) {
-            target.hasQuarantine = false; target.quarantineTurns = 0
+            target.hasQuarantine = false
+            target.quarantineTurns = 0
             return GameResult.Success("✅ Карантин снят с ${target.name}")
         }
         if (owner.hasQuarantine) {
-            owner.hasQuarantine = false; owner.quarantineTurns = 0
+            owner.hasQuarantine = false
+            owner.quarantineTurns = 0
             return GameResult.Success("✅ Карантин снят")
         }
         val door = barricadedDoors.find { (a, b) -> (a == owner && b == target) || (a == target && b == owner) }
-        if (door != null) { barricadedDoors.remove(door); return GameResult.Success("✅ Дверь снята") }
+        if (door != null) {
+            barricadedDoors.remove(door)
+            return GameResult.Success("✅ Дверь снята")
+        }
         return GameResult.Error("Нечего снимать")
     }
 
-    private fun useSuspicion(owner: Player, target: Player?): GameResult {
+    private fun useSuspicion(
+        owner: Player,
+        target: Player?,
+    ): GameResult {
         if (target == null || target.hand.isEmpty()) return GameResult.Error("Нет цели")
         return GameResult.Success("🔎 У ${target.name}: ${target.hand.random().name}")
     }
 
-    private fun useWhiskey(owner: Player): GameResult =
-        GameResult.Success("🥃 ${owner.name}: ${owner.hand.joinToString { it.name }}")
+    private fun useWhiskey(owner: Player): GameResult = GameResult.Success("🥃 ${owner.name}: ${owner.hand.joinToString { it.name }}")
 
     private fun useLookAround(owner: Player): GameResult {
         direction *= -1
@@ -629,4 +749,6 @@ class GameEngine {
     }
 }
 
-fun Deck.clear() { while (isNotEmpty()) draw() }
+fun Deck.clear() {
+    while (isNotEmpty()) draw()
+}

@@ -5,10 +5,9 @@ import javax.swing.*
 import javax.swing.border.*
 
 class NewGameDialog(parent: JFrame) : JDialog(parent, "Новая игра", true) {
-
     private val nameFields = mutableListOf<JTextField>()
     var isConfirmed = false
-    private set
+        private set
 
     init {
         setSize(400, 500)
@@ -79,10 +78,12 @@ class NewGameDialog(parent: JFrame) : JDialog(parent, "Новая игра", tru
                 isConfirmed = true
                 isVisible = false
             } else {
-                JOptionPane.showMessageDialog(this,
-                                              "Введите от 4 до 12 имён игроков!\nСейчас введено: ${names.size}",
-                                              "Ошибка",
-                                              JOptionPane.WARNING_MESSAGE)
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Введите от 4 до 12 имён игроков!\nСейчас введено: ${names.size}",
+                    "Ошибка",
+                    JOptionPane.WARNING_MESSAGE,
+                )
             }
         }
 
@@ -101,7 +102,7 @@ class NewGameDialog(parent: JFrame) : JDialog(parent, "Новая игра", tru
 
     fun getPlayerNames(): List<String> {
         return nameFields
-        .map { it.text.trim() }
-        .filter { it.isNotEmpty() }
+            .map { it.text.trim() }
+            .filter { it.isNotEmpty() }
     }
 }

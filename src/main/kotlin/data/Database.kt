@@ -1,7 +1,7 @@
 package data
 
-import model.Player
 import enums.Role
+import model.Player
 import java.sql.*
 
 data class GameStats(
@@ -9,10 +9,10 @@ data class GameStats(
     val humanWins: Int = 0,
     val thingWins: Int = 0,
     val totalPlayers: Int = 0,
-    val topPlayers: List<List<Any>> = emptyList()
+    val topPlayers: List<List<Any>> = emptyList(),
 )
 
-class GameDatabase (private val dbPath: String = "thing_game.db"){
+class GameDatabase(private val dbPath: String = "thing_game.db") {
     private val dbUrl = "jdbc:sqlite:$dbPath"
 
     init {
@@ -30,7 +30,8 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
         try {
             connect().use { conn ->
                 conn.createStatement().apply {
-                    execute("""
+                    execute(
+                        """
                         CREATE TABLE IF NOT EXISTS players (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name TEXT UNIQUE NOT NULL,
@@ -39,9 +40,11 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
                             score INTEGER DEFAULT 0,
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                         )
-                    """)
+                    """,
+                    )
 
-                    execute("""
+                    execute(
+                        """
                         CREATE TABLE IF NOT EXISTS games (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             winner TEXT NOT NULL,
@@ -51,7 +54,8 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
                             duration_seconds INTEGER DEFAULT 0,
                             played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                         )
-                    """)
+                    """,
+                    )
                 }
             }
         } catch (e: SQLException) {
@@ -76,13 +80,21 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
         }
     }
 
-    fun saveGame(winner: String, players: List<Player>, thingPlayer: String, turnsPlayed: Int) {
+    fun saveGame(
+        winner: String,
+        players: List<Player>,
+        thingPlayer: String,
+        turnsPlayed: Int,
+    ) {
         try {
             connect().use { conn ->
-                val gameStmt = conn.prepareStatement("""
+                val gameStmt =
+                    conn.prepareStatement(
+                        """
                     INSERT INTO games (winner, total_players, turns_played, thing_player)
                     VALUES (?, ?, ?, ?)
-                """)
+                """,
+                    )
 
                 gameStmt.apply {
                     setString(1, winner)
@@ -138,12 +150,14 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
                 val topPlayers = mutableListOf<List<Any>>()
                 val rs = stmt.executeQuery("SELECT name, total_games, wins, score FROM players ORDER BY score DESC LIMIT 10")
                 while (rs.next()) {
-                    topPlayers.add(listOf(
-                        rs.getString("name"),
-                        rs.getInt("total_games"),
-                        rs.getInt("wins"),
-                        rs.getInt("score")
-                    ))
+                    topPlayers.add(
+                        listOf(
+                            rs.getString("name"),
+                            rs.getInt("total_games"),
+                            rs.getInt("wins"),
+                            rs.getInt("score"),
+                        ),
+                    )
                 }
 
                 return GameStats(
@@ -151,7 +165,7 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
                     humanWins = humanWins,
                     thingWins = thingWins,
                     totalPlayers = totalPlayers,
-                    topPlayers = topPlayers
+                    topPlayers = topPlayers,
                 )
             }
         } catch (e: SQLException) {
@@ -164,16 +178,19 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
         try {
             connect().use { conn ->
                 val result = mutableListOf<List<Any>>()
-                val rs = conn.createStatement().executeQuery(
-                    "SELECT name, total_games, wins, score FROM players ORDER BY name"
-                )
+                val rs =
+                    conn.createStatement().executeQuery(
+                        "SELECT name, total_games, wins, score FROM players ORDER BY name",
+                    )
                 while (rs.next()) {
-                    result.add(listOf(
-                        rs.getString("name"),
-                        rs.getInt("total_games"),
-                        rs.getInt("wins"),
-                        rs.getInt("score")
-                    ))
+                    result.add(
+                        listOf(
+                            rs.getString("name"),
+                            rs.getInt("total_games"),
+                            rs.getInt("wins"),
+                            rs.getInt("score"),
+                        ),
+                    )
                 }
                 return result
             }
@@ -187,17 +204,20 @@ class GameDatabase (private val dbPath: String = "thing_game.db"){
         try {
             connect().use { conn ->
                 val result = mutableListOf<List<Any>>()
-                val rs = conn.createStatement().executeQuery(
-                    "SELECT id, winner, turns_played, played_at, thing_player FROM games ORDER BY played_at DESC LIMIT $limit"
-                )
+                val rs =
+                    conn.createStatement().executeQuery(
+                        "SELECT id, winner, turns_played, played_at, thing_player FROM games ORDER BY played_at DESC LIMIT $limit",
+                    )
                 while (rs.next()) {
-                    result.add(listOf(
-                        rs.getInt("id"),
-                        rs.getString("winner"),
-                        rs.getInt("turns_played"),
-                        rs.getString("played_at"),
-                        rs.getString("thing_player")
-                    ))
+                    result.add(
+                        listOf(
+                            rs.getInt("id"),
+                            rs.getString("winner"),
+                            rs.getInt("turns_played"),
+                            rs.getString("played_at"),
+                            rs.getString("thing_player"),
+                        ),
+                    )
                 }
                 return result
             }

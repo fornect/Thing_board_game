@@ -1,6 +1,6 @@
+import data.*
 import model.*
 import systems.*
-import data.*
 
 fun main() {
     println("=".repeat(60))
@@ -42,7 +42,6 @@ fun main() {
         println("=".repeat(60))
         println("✅ ВСЕ ТЕСТЫ ПРОЙДЕНЫ УСПЕШНО!")
         println("=".repeat(60))
-
     } catch (e: AssertionError) {
         println()
         println("=".repeat(60))

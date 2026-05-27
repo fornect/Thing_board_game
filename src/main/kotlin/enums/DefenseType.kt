@@ -5,5 +5,5 @@ enum class DefenseType {
     IM_FINE_HERE,
     NO_THANKS,
     PASS,
-    NO_BBQ
+    NO_BBQ,
 }

@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.21"
     application
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 group = "com.thinggame"
@@ -20,4 +21,31 @@ application {
 
 kotlin {
     jvmToolchain(17)
+}
+
+ktlint {
+    version.set("1.2.0")
+    debug.set(false)
+    verbose.set(true)
+    android.set(false)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    enableExperimentalRules.set(true)
+    filter {
+        exclude("**/generated/**")
+        include("**/kotlin/**")
+    }
+}
+
+tasks.test {
+    dependsOn("runTests")
+    useJUnitPlatform()
+    failOnNoDiscoveredTests = false
+}
+
+tasks.register<JavaExec>("runTests") {
+    group = "verification"
+    description = "Запуск всех тестов через TestRunner"
+    mainClass.set("TestRunnerKt")
+    classpath = sourceSets["test"].runtimeClasspath
 }

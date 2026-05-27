@@ -3,7 +3,6 @@ package model
 import enums.*
 
 class CardTest {
-
     fun test() {
         testActionCardType()
         testDefenseCardType()

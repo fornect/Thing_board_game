@@ -3,7 +3,6 @@ package model
 import enums.ActionType
 
 class DeckTest {
-
     fun test() {
         testDeckEmpty()
         testAddCard()
@@ -63,10 +62,11 @@ class DeckTest {
 
     private fun testAddAll() {
         val deck = Deck()
-        val cards = listOf(
-            ActionCard("A", "a", ActionType.ANALYSIS),
-                           ActionCard("B", "b", ActionType.FLAMETHROWER)
-        )
+        val cards =
+            listOf(
+                ActionCard("A", "a", ActionType.ANALYSIS),
+                ActionCard("B", "b", ActionType.FLAMETHROWER),
+            )
         deck.addAll(cards)
         assert(deck.size() == 2) { "Размер должен быть 2 после addAll" }
     }

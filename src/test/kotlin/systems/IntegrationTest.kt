@@ -1,10 +1,9 @@
 package systems
 
-import model.*
 import enums.*
+import model.*
 
 class IntegrationTest {
-
     fun test() {
         testFullGameFlow()
         testInfectionThroughExchange()

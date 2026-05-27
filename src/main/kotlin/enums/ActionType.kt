@@ -11,5 +11,5 @@ enum class ActionType {
     SWAP_SEATS_NEIGHBOR,
     SWAP_SEATS_ANY,
     TEMPTATION,
-    INFECTION
+    INFECTION,
 }

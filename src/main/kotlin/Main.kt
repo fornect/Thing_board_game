@@ -11,7 +11,8 @@ fun main(args: Array<String>) {
         // GUI версия (по умолчанию)
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
 
         SwingUtilities.invokeLater {
             GameGUI()

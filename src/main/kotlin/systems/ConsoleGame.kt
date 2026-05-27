@@ -1,7 +1,7 @@
 package systems
 
-import model.*
 import enums.*
+import model.*
 
 class ConsoleGame {
     private val engine = GameEngine()
@@ -24,7 +24,10 @@ class ConsoleGame {
 
         while (true) {
             val player = engine.getCurrentPlayer() ?: break
-            if (!player.isAlive) { engine.endTurn(player); continue }
+            if (!player.isAlive) {
+                engine.endTurn(player)
+                continue
+            }
 
             println("\n${"=".repeat(40)}")
             println("🎯 Ход ${engine.getTurnNumber() + 1}: ${player.name} (${player.role})")
@@ -49,13 +52,20 @@ class ConsoleGame {
                         when (readlnOrNull()) {
                             "1" -> {
                                 val axeCard = player.hand.find { it.name == "Топор" }
-                                if (axeCard != null) println(engine.playCard(player, axeCard, player).message)
-                                else println("У вас нет Топора!")
+                                if (axeCard != null) {
+                                    println(engine.playCard(player, axeCard, player).message)
+                                } else {
+                                    println("У вас нет Топора!")
+                                }
                                 actionDone = true
                             }
+
                             "2" -> {
                                 val disc = engine.getDiscardableCards(player)
-                                if (disc.isEmpty()) { println("Нет карт!"); continue }
+                                if (disc.isEmpty()) {
+                                    println("Нет карт!")
+                                    continue
+                                }
                                 disc.forEachIndexed { i, c -> println("$i - ${c.name}") }
                                 print("Карта: ")
                                 val ci = readlnOrNull()?.toIntOrNull() ?: 0
@@ -70,7 +80,10 @@ class ConsoleGame {
                         when (readlnOrNull()) {
                             "1" -> {
                                 val playable = engine.getPlayableCards(player)
-                                if (playable.isEmpty()) { println("Нет карт!"); continue }
+                                if (playable.isEmpty()) {
+                                    println("Нет карт!")
+                                    continue
+                                }
                                 playable.forEachIndexed { i, c -> println("$i - ${c.name}") }
                                 print("Карта: ")
                                 val ci = readlnOrNull()?.toIntOrNull() ?: 0
@@ -78,9 +91,24 @@ class ConsoleGame {
                                 val card = playable[ci]
 
                                 var target: Player? = null
-                                if (card.name in listOf("Огнемёт", "Анализ", "Топор", "Подозрение", "Карантин", "Заколоченная дверь", "Меняемся местами!", "Сматывай удочки!", "Соблазн")) {
+                                if (card.name in
+                                    listOf(
+                                        "Огнемёт",
+                                        "Анализ",
+                                        "Топор",
+                                        "Подозрение",
+                                        "Карантин",
+                                        "Заколоченная дверь",
+                                        "Меняемся местами!",
+                                        "Сматывай удочки!",
+                                        "Соблазн",
+                                    )
+                                ) {
                                     val targets = engine.getTargets(player, card.name)
-                                    if (targets.isEmpty()) { println("Нет целей!"); continue }
+                                    if (targets.isEmpty()) {
+                                        println("Нет целей!")
+                                        continue
+                                    }
                                     targets.forEachIndexed { i, t -> println("$i - ${t.name}") }
                                     print("Цель: ")
                                     val ti = readlnOrNull()?.toIntOrNull() ?: 0
@@ -102,15 +130,26 @@ class ConsoleGame {
                                     print("Выберите: ")
                                     val c2 = readlnOrNull()?.toIntOrNull() ?: 0
                                     if (c1 in result.playerCards.indices && c2 in result.neighborCards.indices) {
-                                        println(engine.performExchange(result.player, result.neighbor, result.playerCards[c1], result.neighborCards[c2]).message)
+                                        println(
+                                            engine.performExchange(
+                                                result.player,
+                                                result.neighbor,
+                                                result.playerCards[c1],
+                                                result.neighborCards[c2],
+                                            ).message,
+                                        )
                                     }
                                 }
 
                                 if (card.name != "Упорство") actionDone = true
                             }
+
                             "2" -> {
                                 val disc = engine.getDiscardableCards(player)
-                                if (disc.isEmpty()) { println("Нет карт!"); continue }
+                                if (disc.isEmpty()) {
+                                    println("Нет карт!")
+                                    continue
+                                }
                                 disc.forEachIndexed { i, c -> println("$i - ${c.name}") }
                                 print("Карта: ")
                                 val ci = readlnOrNull()?.toIntOrNull() ?: 0
@@ -155,9 +194,17 @@ class ConsoleGame {
                         print("Выберите: ")
                         val c2 = readlnOrNull()?.toIntOrNull() ?: 0
                         if (c1 in exResult.playerCards.indices && c2 in exResult.neighborCards.indices) {
-                            println(engine.performExchange(exResult.player, exResult.neighbor, exResult.playerCards[c1], exResult.neighborCards[c2]).message)
+                            println(
+                                engine.performExchange(
+                                    exResult.player,
+                                    exResult.neighbor,
+                                    exResult.playerCards[c1],
+                                    exResult.neighborCards[c2],
+                                ).message,
+                            )
                         }
                     }
+
                     else -> println(exResult.message)
                 }
             } else {
@@ -176,4 +223,6 @@ class ConsoleGame {
     }
 }
 
-fun main() { ConsoleGame().start() }
+fun main() {
+    ConsoleGame().start()
+}

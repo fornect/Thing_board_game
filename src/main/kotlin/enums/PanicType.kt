@@ -12,5 +12,5 @@ enum class PanicType {
     CALL_THAT_PARTY,
     GET_OUT,
     FORGETFULNESS,
-    OOPS
+    OOPS,
 }
