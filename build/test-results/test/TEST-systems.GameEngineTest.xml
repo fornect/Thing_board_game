@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="systems.GameEngineTest" tests="21" skipped="0" failures="0" errors="0" timestamp="2026-05-28T15:32:25.959Z" hostname="fornect-v15xv17xrnx" time="0.018">
+  <properties/>
+  <testcase name="door blocks adjacency()" classname="systems.GameEngineTest" time="0.002"/>
+  <testcase name="checkVictory returns THING when all infected()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="flamethrower blocked by defense()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="endTurn decreases quarantine()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="axe removes quarantine()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="checkVictory returns null when game continues()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="cannot discard THING card()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="setupGame assigns one THING()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="exchange moves cards between players()" classname="systems.GameEngineTest" time="0.002"/>
+  <testcase name="getTargets excludes quarantined players()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="setupGame validates duplicates()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="setupGame creates correct number of players()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="getPlayableCards excludes infection and defense()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="checkVictory returns HUMANS when thing is dead()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="quarantine blocks non-axe actions()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="flamethrower kills adjacent player()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="setupGame validates player count()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="handleDefense returns DefensePlayed()" classname="systems.GameEngineTest" time="0.001"/>
+  <testcase name="setupGame validates empty names()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="discard removes card from hand()" classname="systems.GameEngineTest" time="0.0"/>
+  <testcase name="drawCard adds card to hand()" classname="systems.GameEngineTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

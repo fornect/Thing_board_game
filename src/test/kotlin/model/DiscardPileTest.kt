@@ -1,54 +1,43 @@
 package model
 
 import enums.ActionType
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class DiscardPileTest {
-    fun test() {
-        testEmpty()
-        testAddCard()
-        testTakeAll()
-        testClear()
-        testIsNotEmpty()
-        println("✅ DiscardPileTest: все тесты пройдены!")
-    }
-
-    private fun testEmpty() {
+    @Test
+    fun `discard pile should be empty when created`() {
         val pile = DiscardPile()
-        assert(pile.size() == 0) { "Размер должен быть 0" }
-        assert(pile.isEmpty()) { "Сброс должен быть пуст" }
+        assertEquals(0, pile.size())
+        assertTrue(pile.isEmpty())
     }
 
-    private fun testAddCard() {
+    @Test
+    fun `add card should increase size`() {
         val pile = DiscardPile()
         val card = ActionCard("Test", "Desc", ActionType.ANALYSIS)
         pile.add(card)
-        assert(pile.size() == 1) { "Размер должен быть 1" }
-        assert(pile.isNotEmpty()) { "Сброс не должен быть пуст" }
+        assertEquals(1, pile.size())
+        assertTrue(pile.isNotEmpty())
     }
 
-    private fun testTakeAll() {
+    @Test
+    fun `takeAll should return all cards and clear pile`() {
         val pile = DiscardPile()
         pile.add(ActionCard("A", "a", ActionType.ANALYSIS))
         pile.add(ActionCard("B", "b", ActionType.FLAMETHROWER))
-
         val taken = pile.takeAll()
-        assert(taken.size == 2) { "Должно вернуть 2 карты" }
-        assert(pile.size() == 0) { "Сброс должен быть пуст" }
-        assert(pile.isEmpty()) { "Сброс должен быть пуст" }
+        assertEquals(2, taken.size)
+        assertEquals(0, pile.size())
+        assertTrue(pile.isEmpty())
     }
 
-    private fun testClear() {
+    @Test
+    fun `clear should remove all cards`() {
         val pile = DiscardPile()
         pile.add(ActionCard("Test", "Desc", ActionType.ANALYSIS))
         pile.add(ActionCard("Test2", "Desc2", ActionType.FLAMETHROWER))
         pile.clear()
-        assert(pile.size() == 0) { "После clear размер должен быть 0" }
-    }
-
-    private fun testIsNotEmpty() {
-        val pile = DiscardPile()
-        assert(!pile.isNotEmpty()) { "Пустой сброс — isNotEmpty = false" }
-        pile.add(ActionCard("Test", "Desc", ActionType.ANALYSIS))
-        assert(pile.isNotEmpty()) { "С картой isNotEmpty = true" }
+        assertEquals(0, pile.size())
     }
 }

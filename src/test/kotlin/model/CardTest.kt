@@ -1,47 +1,45 @@
 package model
 
 import enums.*
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class CardTest {
-    fun test() {
-        testActionCardType()
-        testDefenseCardType()
-        testObstacleCardType()
-        testPanicCardType()
-        testCopy()
-        println("✅ CardTest: все тесты пройдены!")
-    }
-
-    private fun testActionCardType() {
+    @Test
+    fun `action card should have correct type`() {
         val card = ActionCard("Test", "Description", ActionType.ANALYSIS)
-        assert(card.type == CardType.ACTION) { "Тип должен быть ACTION" }
-        assert(card.subType == ActionType.ANALYSIS) { "Подтип должен быть ANALYSIS" }
+        assertEquals(CardType.ACTION, card.type)
+        assertEquals(ActionType.ANALYSIS, card.subType)
     }
 
-    private fun testDefenseCardType() {
+    @Test
+    fun `defense card should have correct type`() {
         val card = DefenseCard("Test", "Description", DefenseType.NO_THANKS)
-        assert(card.type == CardType.DEFENSE) { "Тип должен быть DEFENSE" }
-        assert(card.subType == DefenseType.NO_THANKS) { "Подтип должен быть NO_THANKS" }
+        assertEquals(CardType.DEFENSE, card.type)
+        assertEquals(DefenseType.NO_THANKS, card.subType)
     }
 
-    private fun testObstacleCardType() {
+    @Test
+    fun `obstacle card should have correct type`() {
         val card = ObstacleCard("Test", "Description", ObstacleType.QUARANTINE)
-        assert(card.type == CardType.OBSTACLE) { "Тип должен быть OBSTACLE" }
-        assert(card.subType == ObstacleType.QUARANTINE) { "Подтип должен быть QUARANTINE" }
+        assertEquals(CardType.OBSTACLE, card.type)
+        assertEquals(ObstacleType.QUARANTINE, card.subType)
     }
 
-    private fun testPanicCardType() {
+    @Test
+    fun `panic card should have correct type`() {
         val card = PanicCard("Test", "Description", PanicType.NO_PANIC)
-        assert(card.type == CardType.PANIC) { "Тип должен быть PANIC" }
-        assert(card.subType == PanicType.NO_PANIC) { "Подтип должен быть NO_PANIC" }
+        assertEquals(CardType.PANIC, card.type)
+        assertEquals(PanicType.NO_PANIC, card.subType)
     }
 
-    private fun testCopy() {
+    @Test
+    fun `copy should create new instance with same values`() {
         val card = ActionCard("Fire", "Burn", ActionType.FLAMETHROWER)
         val copy = card.copy()
-        assert(card.name == copy.name) { "Имена должны совпадать" }
-        assert(card.description == copy.description) { "Описания должны совпадать" }
-        assert(card.subType == copy.subType) { "Подтипы должны совпадать" }
-        assert(card !== copy) { "Это должны быть разные объекты" }
+        assertEquals(card.name, copy.name)
+        assertEquals(card.description, copy.description)
+        assertEquals(card.subType, copy.subType)
+        assertNotSame(card, copy)
     }
 }

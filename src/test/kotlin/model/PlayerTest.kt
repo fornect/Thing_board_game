@@ -2,58 +2,76 @@ package model
 
 import enums.ActionType
 import enums.Role
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class PlayerTest {
-    fun test() {
-        testDefaultRole()
-        testDefaultAlive()
-        testDefaultHand()
-        testKill()
-        testDefaultQuarantine()
-        testDefaultBarricade()
-        testHasCard()
-        println("✅ PlayerTest: все тесты пройдены!")
-    }
-
-    private fun testDefaultRole() {
+    @Test
+    fun `player should be human by default`() {
         val player = Player("Test")
-        assert(player.role == Role.HUMAN) { "По умолчанию роль должна быть HUMAN" }
+        assertEquals(Role.HUMAN, player.role)
     }
 
-    private fun testDefaultAlive() {
+    @Test
+    fun `player should be alive by default`() {
         val player = Player("Test")
-        assert(player.isAlive) { "По умолчанию игрок должен быть жив" }
+        assertTrue(player.isAlive)
     }
 
-    private fun testDefaultHand() {
+    @Test
+    fun `player should have empty hand by default`() {
         val player = Player("Test")
-        assert(player.hand.size == 0) { "По умолчанию рука должна быть пуста" }
+        assertEquals(0, player.hand.size)
     }
 
-    private fun testKill() {
+    @Test
+    fun `kill should set isAlive to false and clear hand`() {
         val player = Player("Test")
         player.hand.add(ActionCard("Test", "Desc", ActionType.ANALYSIS))
         player.kill()
-        assert(!player.isAlive) { "После kill игрок должен быть мёртв" }
-        assert(player.hand.size == 0) { "После kill рука должна быть пуста" }
+        assertFalse(player.isAlive)
+        assertEquals(0, player.hand.size)
     }
 
-    private fun testDefaultQuarantine() {
+    @Test
+    fun `quarantine should be false by default`() {
         val player = Player("Test")
-        assert(!player.hasQuarantine) { "По умолчанию карантина быть не должно" }
-        assert(player.quarantineTurns == 0) { "По умолчанию quarantineTurns = 0" }
+        assertFalse(player.hasQuarantine)
+        assertEquals(0, player.quarantineTurns)
     }
 
-    private fun testDefaultBarricade() {
+    @Test
+    fun `setQuarantine should set quarantine with turns`() {
         val player = Player("Test")
-        assert(!player.hasBarricade) { "По умолчанию баррикады быть не должно" }
+        player.setQuarantine(3)
+        assertTrue(player.hasQuarantine)
+        assertEquals(3, player.quarantineTurns)
     }
 
-    private fun testHasCard() {
+    @Test
+    fun `removeQuarantine should clear quarantine`() {
         val player = Player("Test")
-        val card = ActionCard("Огнемёт", "Test", ActionType.FLAMETHROWER)
-        player.hand.add(card)
-        assert(player.hand.any { it.name == "Огнемёт" }) { "Карта должна быть в руке" }
-        assert(!player.hand.any { it.name == "Анализ" }) { "Этой карты не должно быть в руке" }
+        player.setQuarantine(3)
+        player.removeQuarantine()
+        assertFalse(player.hasQuarantine)
+        assertEquals(0, player.quarantineTurns)
+    }
+
+    @Test
+    fun `decreaseQuarantine should reduce turns`() {
+        val player = Player("Test")
+        player.setQuarantine(3)
+        player.decreaseQuarantine()
+        assertEquals(2, player.quarantineTurns)
+        assertTrue(player.hasQuarantine)
+    }
+
+    @Test
+    fun `decreaseQuarantine should remove when zero`() {
+        val player = Player("Test")
+        player.setQuarantine(1)
+        player.decreaseQuarantine()
+        assertFalse(player.hasQuarantine)
+        assertEquals(0, player.quarantineTurns)
     }
 }

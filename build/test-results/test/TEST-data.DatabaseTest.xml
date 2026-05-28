@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="data.DatabaseTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-05-28T15:32:25.771Z" hostname="fornect-v15xv17xrnx" time="0.15">
+  <properties/>
+  <testcase name="getGameHistory returns list()" classname="data.DatabaseTest" time="0.092"/>
+  <testcase name="tables are created successfully()" classname="data.DatabaseTest" time="0.008"/>
+  <testcase name="addPlayer adds new player()" classname="data.DatabaseTest" time="0.02"/>
+  <testcase name="getAllPlayers returns list()" classname="data.DatabaseTest" time="0.011"/>
+  <testcase name="saveGame records game()" classname="data.DatabaseTest" time="0.011"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

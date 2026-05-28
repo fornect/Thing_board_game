@@ -1,66 +1,64 @@
 package model
 
 import enums.ActionType
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class DeckTest {
-    fun test() {
-        testDeckEmpty()
-        testAddCard()
-        testDrawFromEmpty()
-        testDrawCard()
-        testDrawOrder()
-        testShuffle()
-        testAddAll()
-        println("✅ DeckTest: все тесты пройдены!")
-    }
-
-    private fun testDeckEmpty() {
+    @Test
+    fun `deck should be empty when created`() {
         val deck = Deck()
-        assert(deck.size() == 0) { "Размер должен быть 0" }
-        assert(deck.isEmpty()) { "Колода должна быть пуста" }
+        assertEquals(0, deck.size())
+        assertTrue(deck.isEmpty())
     }
 
-    private fun testAddCard() {
+    @Test
+    fun `add card should increase size`() {
         val deck = Deck()
         val card = ActionCard("Test", "Test card", ActionType.ANALYSIS)
         deck.add(card)
-        assert(deck.size() == 1) { "Размер должен быть 1" }
+        assertEquals(1, deck.size())
     }
 
-    private fun testDrawFromEmpty() {
+    @Test
+    fun `draw should return null from empty deck`() {
         val deck = Deck()
-        assert(deck.draw() == null) { "Из пустой колоды должен возвращаться null" }
+        assertNull(deck.draw())
     }
 
-    private fun testDrawCard() {
+    @Test
+    fun `draw should return card and remove it`() {
         val deck = Deck()
         val card = ActionCard("Test", "Test card", ActionType.ANALYSIS)
         deck.add(card)
         val drawn = deck.draw()
-        assert(drawn != null) { "Карта должна быть вытянута" }
-        assert(drawn?.name == "Test") { "Имя карты должно быть 'Test'" }
-        assert(deck.size() == 0) { "Колода должна быть пуста после draw" }
+        assertNotNull(drawn)
+        assertEquals("Test", drawn?.name)
+        assertEquals(0, deck.size())
     }
 
-    private fun testDrawOrder() {
+    @Test
+    fun `draw should return cards in order`() {
         val deck = Deck()
         val card1 = ActionCard("First", "First card", ActionType.FLAMETHROWER)
         val card2 = ActionCard("Second", "Second card", ActionType.ANALYSIS)
         deck.add(card1)
         deck.add(card2)
-        assert(deck.draw()?.name == "First") { "Первая карта должна быть First" }
-        assert(deck.draw()?.name == "Second") { "Вторая карта должна быть Second" }
+        assertEquals("First", deck.draw()?.name)
+        assertEquals("Second", deck.draw()?.name)
     }
 
-    private fun testShuffle() {
+    @Test
+    fun `shuffle should keep same number of cards`() {
         val deck = Deck()
         repeat(10) { deck.add(ActionCard("Card $it", "Desc", ActionType.ANALYSIS)) }
         val sizeBefore = deck.size()
         deck.shuffle()
-        assert(sizeBefore == deck.size()) { "Размер после shuffle должен быть тем же" }
+        assertEquals(sizeBefore, deck.size())
     }
 
-    private fun testAddAll() {
+    @Test
+    fun `addAll should add multiple cards`() {
         val deck = Deck()
         val cards =
             listOf(
@@ -68,6 +66,6 @@ class DeckTest {
                 ActionCard("B", "b", ActionType.FLAMETHROWER),
             )
         deck.addAll(cards)
-        assert(deck.size() == 2) { "Размер должен быть 2 после addAll" }
+        assertEquals(2, deck.size())
     }
 }

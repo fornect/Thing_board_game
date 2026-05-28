@@ -1,0 +1,4 @@
+[90m/home/fornect/Thing_board_game/src/main/kotlin/model/[0mDeck.kt[90m:[0m29[90m:1:[0m Unexpected blank line(s) before "}" [90m(standard:no-blank-line-before-rbrace)[0m
+
+Summary error count (descending) by rule:
+  standard:no-blank-line-before-rbrace: 1

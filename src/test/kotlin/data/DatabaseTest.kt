@@ -2,38 +2,32 @@ package data
 
 import enums.Role
 import model.Player
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class DatabaseTest {
-    fun test() {
-        val testDbPath = "thing_game_test.db"
-        File(testDbPath).delete() // Удаляем старую тестовую БД
-
-        val db = GameDatabase(testDbPath) // Используем тестовую БД
-
-        testCreateTables(db)
-        testAddPlayer(db)
-        testSaveGame(db)
-        testGetStats(db)
-        testGetAllPlayers(db)
-        testGetGameHistory(db)
-
-        File(testDbPath).delete() // Удаляем после тестов
-
-        println("✅ DatabaseTest: все тесты пройдены!")
+    @Test
+    fun `tables are created successfully`() {
+        val db = GameDatabase("test_game.db")
+        val stats = db.getStats()
+        assertNotNull(stats)
+        assertTrue(stats.totalGames >= 0)
+        File("test_game.db").delete()
     }
 
-    private fun testCreateTables(db: GameDatabase) {
-        assert(true) { "Таблицы созданы" }
-    }
-
-    private fun testAddPlayer(db: GameDatabase) {
+    @Test
+    fun `addPlayer adds new player`() {
+        val db = GameDatabase("test_add.db")
         db.addPlayer("TestPlayer")
         val stats = db.getStats()
-        assert(stats.totalPlayers >= 1) { "Игрок должен быть добавлен" }
+        assertTrue(stats.totalPlayers >= 1)
+        File("test_add.db").delete()
     }
 
-    private fun testSaveGame(db: GameDatabase) {
+    @Test
+    fun `saveGame records game`() {
+        val db = GameDatabase("test_save.db")
         val players =
             listOf(
                 Player("Анна").apply {
@@ -46,21 +40,25 @@ class DatabaseTest {
                 },
             )
         db.saveGame("HUMANS", players, "Борис", 10)
-        assert(db.getStats().totalGames >= 1) { "Игра должна быть сохранена" }
-    }
-
-    private fun testGetStats(db: GameDatabase) {
         val stats = db.getStats()
-        assert(stats.totalGames >= 0) { "Статистика должна возвращаться" }
+        assertTrue(stats.totalGames >= 1)
+        File("test_save.db").delete()
     }
 
-    private fun testGetAllPlayers(db: GameDatabase) {
+    @Test
+    fun `getAllPlayers returns list`() {
+        val db = GameDatabase("test_list.db")
+        db.addPlayer("Player1")
         val players = db.getAllPlayers()
-        assert(players is List<*>) { "Список игроков должен возвращаться" }
+        assertTrue(players.isNotEmpty())
+        File("test_list.db").delete()
     }
 
-    private fun testGetGameHistory(db: GameDatabase) {
+    @Test
+    fun `getGameHistory returns list`() {
+        val db = GameDatabase("test_history.db")
         val history = db.getGameHistory(5)
-        assert(history is List<*>) { "История должна возвращаться" }
+        assertNotNull(history)
+        File("test_history.db").delete()
     }
 }

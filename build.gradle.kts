@@ -36,11 +36,14 @@ ktlint {
         include("**/kotlin/**")
     }
 }
+dependencies {
+    implementation("org.xerial:sqlite-jdbc:3.42.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
 
 tasks.test {
-    dependsOn("runTests")
     useJUnitPlatform()
-    failOnNoDiscoveredTests = false
 }
 
 tasks.register<JavaExec>("runTests") {

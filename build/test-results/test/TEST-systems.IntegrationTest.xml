@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="systems.IntegrationTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-28T15:32:25.977Z" hostname="fornect-v15xv17xrnx" time="0.003">
+  <properties/>
+  <testcase name="axe removes quarantine()" classname="systems.IntegrationTest" time="0.001"/>
+  <testcase name="infection spreads through exchange()" classname="systems.IntegrationTest" time="0.001"/>
+  <testcase name="door blocks exchange()" classname="systems.IntegrationTest" time="0.001"/>
+  <testcase name="full game flow works()" classname="systems.IntegrationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

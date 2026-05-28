@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="model.DeckTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-05-28T15:32:25.929Z" hostname="fornect-v15xv17xrnx" time="0.005">
+  <properties/>
+  <testcase name="shuffle should keep same number of cards()" classname="model.DeckTest" time="0.0"/>
+  <testcase name="addAll should add multiple cards()" classname="model.DeckTest" time="0.0"/>
+  <testcase name="draw should return null from empty deck()" classname="model.DeckTest" time="0.001"/>
+  <testcase name="draw should return card and remove it()" classname="model.DeckTest" time="0.001"/>
+  <testcase name="add card should increase size()" classname="model.DeckTest" time="0.001"/>
+  <testcase name="draw should return cards in order()" classname="model.DeckTest" time="0.001"/>
+  <testcase name="deck should be empty when created()" classname="model.DeckTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
