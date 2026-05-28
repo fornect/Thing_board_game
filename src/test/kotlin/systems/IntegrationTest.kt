@@ -50,12 +50,13 @@ class IntegrationTest {
         human.hand.add(ActionCard("Виски", "Test", ActionType.WHISKEY))
 
         // Прямой обмен через performExchange
-        val result = engine.performExchange(
-            thing,
-            human,
-            thing.hand[0],
-            human.hand[0],
-        )
+        val result =
+            engine.performExchange(
+                thing,
+                human,
+                thing.hand[0],
+                human.hand[0],
+            )
 
         assertTrue(result is GameEngine.GameResult.Success)
         assertEquals(Role.INFECTED, human.role)
