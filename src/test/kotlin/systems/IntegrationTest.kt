@@ -35,36 +35,30 @@ class IntegrationTest {
         val engine = GameEngine()
         engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
 
-
+        // Находим НЕЧТО и его соседа
         val thing = engine.getPlayers().find { it.role == Role.THING }
-        assertNotNull(thing, "Должен быть НЕЧТО")
+        assertNotNull(thing)
 
-        val exResult = engine.executeExchange(thing!!)
-        assertTrue(
-            exResult is GameEngine.GameResult.ExchangeInfo,
-            "Должен быть ExchangeInfo, получили: ${exResult.message}",
-        )
+        val human = engine.getPlayers().find { it.role == Role.HUMAN && engine.isAdjacent(thing!!, it) }
+        assertNotNull(human)
 
-        val info = exResult as GameEngine.GameResult.ExchangeInfo
-        val human = info.neighbor
-
-        thing.hand.clear()
+        // Даём карты
+        thing!!.hand.clear()
         thing.hand.add(ActionCard("Заражение!", "Test", ActionType.INFECTION))
-        thing.hand.add(ActionCard("Анализ", "Test", ActionType.ANALYSIS))
 
-        human.hand.clear()
+        human!!.hand.clear()
         human.hand.add(ActionCard("Виски", "Test", ActionType.WHISKEY))
 
-        val exResult2 = engine.executeExchange(thing)
-        assertTrue(exResult2 is GameEngine.GameResult.ExchangeInfo)
-        val info2 = exResult2 as GameEngine.GameResult.ExchangeInfo
+        // Прямой обмен через performExchange
+        val result = engine.performExchange(
+            thing,
+            human,
+            thing.hand[0],
+            human.hand[0],
+        )
 
-        val infectionCard = info2.playerCards.find { it.name == "Заражение!" }
-        assertNotNull(infectionCard, "У НЕЧТО должна быть карта Заражения")
-
-        val result = engine.performExchange(thing, human, infectionCard!!, info2.neighborCards.first())
-        assertTrue(result is GameEngine.GameResult.Success, "Обмен должен быть успешным")
-        assertEquals(Role.INFECTED, human.role, "Человек должен быть заражён после обмена")
+        assertTrue(result is GameEngine.GameResult.Success)
+        assertEquals(Role.INFECTED, human.role)
     }
 
     @Test

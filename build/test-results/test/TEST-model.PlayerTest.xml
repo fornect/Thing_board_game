@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="model.PlayerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-05-28T16:07:01.302Z" hostname="fornect-v15xv17xrnx" time="0.003">
+<testsuite name="model.PlayerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-05-28T16:15:17.344Z" hostname="fornect-v15xv17xrnx" time="0.003">
   <properties/>
-  <testcase name="quarantine should be false by default()" classname="model.PlayerTest" time="0.0"/>
-  <testcase name="setQuarantine should set quarantine with turns()" classname="model.PlayerTest" time="0.001"/>
-  <testcase name="kill should set isAlive to false and clear hand()" classname="model.PlayerTest" time="0.0"/>
+  <testcase name="quarantine should be false by default()" classname="model.PlayerTest" time="0.001"/>
+  <testcase name="setQuarantine should set quarantine with turns()" classname="model.PlayerTest" time="0.0"/>
+  <testcase name="kill should set isAlive to false and clear hand()" classname="model.PlayerTest" time="0.001"/>
   <testcase name="player should be alive by default()" classname="model.PlayerTest" time="0.0"/>
   <testcase name="removeQuarantine should clear quarantine()" classname="model.PlayerTest" time="0.0"/>
-  <testcase name="decreaseQuarantine should remove when zero()" classname="model.PlayerTest" time="0.0"/>
+  <testcase name="decreaseQuarantine should remove when zero()" classname="model.PlayerTest" time="0.001"/>
   <testcase name="player should be human by default()" classname="model.PlayerTest" time="0.0"/>
   <testcase name="decreaseQuarantine should reduce turns()" classname="model.PlayerTest" time="0.0"/>
-  <testcase name="player should have empty hand by default()" classname="model.PlayerTest" time="0.001"/>
+  <testcase name="player should have empty hand by default()" classname="model.PlayerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
