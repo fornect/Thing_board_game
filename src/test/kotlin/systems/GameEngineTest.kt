@@ -148,12 +148,17 @@ class GameEngineTest {
         val defender = engine.getCurrentPlayer()!!
         defender.hand.clear()
         defender.hand.add(DefenseCard("Страх", "Test", DefenseType.FEAR))
-        val attacker = engine.getPlayers().find { it != defender }!!
 
-        val result = engine.handleDefense(defender, attacker, ActionCard("Test", "", ActionType.ANALYSIS))
+        val attacker = engine.getPlayers().find { it != defender && it.isAlive }
+        assertNotNull(attacker, "Должен быть другой игрок для атаки")
 
-        assertTrue(result is GameEngine.GameResult.DefensePlayed)
-        assertFalse(defender.hand.any { it.name == "Страх" })
+        val result = engine.handleDefense(defender, attacker!!, ActionCard("Test", "", ActionType.ANALYSIS))
+
+        assertTrue(
+            result is GameEngine.GameResult.DefensePlayed,
+            "Должен быть DefensePlayed, получили: ${result.message}",
+        )
+        assertFalse(defender.hand.any { it.name == "Страх" }, "Карта защиты должна быть удалена")
     }
 
     @Test

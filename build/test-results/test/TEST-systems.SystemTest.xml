@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="systems.SystemTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-28T15:32:25.981Z" hostname="fornect-v15xv17xrnx" time="0.004">
+<testsuite name="systems.SystemTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-28T16:07:01.315Z" hostname="fornect-v15xv17xrnx" time="0.005">
   <properties/>
-  <testcase name="thing wins when all infected()" classname="systems.SystemTest" time="0.0"/>
-  <testcase name="complete game produces valid state()" classname="systems.SystemTest" time="0.001"/>
-  <testcase name="humans win when thing is killed()" classname="systems.SystemTest" time="0.0"/>
+  <testcase name="thing wins when all infected()" classname="systems.SystemTest" time="0.001"/>
+  <testcase name="complete game produces valid state()" classname="systems.SystemTest" time="0.002"/>
+  <testcase name="humans win when thing is killed()" classname="systems.SystemTest" time="0.001"/>
   <testcase name="quarantine lasts 3 player turns()" classname="systems.SystemTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

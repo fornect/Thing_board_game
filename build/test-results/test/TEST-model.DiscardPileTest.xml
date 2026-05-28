@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="model.DiscardPileTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-28T15:32:25.935Z" hostname="fornect-v15xv17xrnx" time="0.003">
+<testsuite name="model.DiscardPileTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-28T16:07:01.298Z" hostname="fornect-v15xv17xrnx" time="0.003">
   <properties/>
-  <testcase name="takeAll should return all cards and clear pile()" classname="model.DiscardPileTest" time="0.002"/>
-  <testcase name="discard pile should be empty when created()" classname="model.DiscardPileTest" time="0.0"/>
-  <testcase name="clear should remove all cards()" classname="model.DiscardPileTest" time="0.0"/>
-  <testcase name="add card should increase size()" classname="model.DiscardPileTest" time="0.001"/>
+  <testcase name="takeAll should return all cards and clear pile()" classname="model.DiscardPileTest" time="0.0"/>
+  <testcase name="discard pile should be empty when created()" classname="model.DiscardPileTest" time="0.001"/>
+  <testcase name="clear should remove all cards()" classname="model.DiscardPileTest" time="0.001"/>
+  <testcase name="add card should increase size()" classname="model.DiscardPileTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
