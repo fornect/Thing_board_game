@@ -28,4 +28,4 @@ jobs:
       
       # Запуск тестов с виртуальным дисплеем
       - name: Run tests
-        run: ./gradlew runTests
+        run: ./gradlew test

@@ -45,10 +45,3 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-
-tasks.register<JavaExec>("runTests") {
-    group = "verification"
-    description = "Запуск всех тестов через TestRunner"
-    mainClass.set("TestRunnerKt")
-    classpath = sourceSets["test"].runtimeClasspath
-}
