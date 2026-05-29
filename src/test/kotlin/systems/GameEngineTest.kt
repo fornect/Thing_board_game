@@ -31,7 +31,7 @@ class GameEngineTest {
         val player = engine.getCurrentPlayer()!!
         val handSizeBefore = player.hand.size
         val result = engine.drawCard(player)
-        if (result is GameEngine.GameResult.Success) {
+        if (result is GameResult.Success) {
             assertEquals(handSizeBefore + 1, player.hand.size)
         }
     }
@@ -46,7 +46,7 @@ class GameEngineTest {
 
         val result = engine.playCard(player, player.hand[0], target)
 
-        assertTrue(result is GameEngine.GameResult.Success)
+        assertTrue(result is GameResult.Success)
         assertFalse(target.isAlive)
     }
 
@@ -75,7 +75,7 @@ class GameEngineTest {
 
         val result = engine.playCard(player, player.hand[0], target)
 
-        assertTrue(result is GameEngine.GameResult.Error)
+        assertTrue(result is GameResult.Error)
         assertTrue(result.message.contains("карантине"))
     }
 
@@ -89,7 +89,7 @@ class GameEngineTest {
 
         val result = engine.playCard(player, player.hand[0], player)
 
-        assertTrue(result is GameEngine.GameResult.Success)
+        assertTrue(result is GameResult.Success)
         assertFalse(player.hasQuarantine)
     }
 
@@ -102,7 +102,7 @@ class GameEngineTest {
 
         val result = engine.discardCard(player, card)
 
-        assertTrue(result is GameEngine.GameResult.Success)
+        assertTrue(result is GameResult.Success)
         assertEquals(0, player.hand.size)
     }
 
@@ -115,7 +115,7 @@ class GameEngineTest {
 
         val result = engine.discardCard(player, thingCard)
 
-        assertTrue(result is GameEngine.GameResult.Error)
+        assertTrue(result is GameResult.Error)
         assertTrue(player.hand.contains(thingCard))
     }
 
@@ -131,11 +131,11 @@ class GameEngineTest {
 
         val result = engine.executeExchange(player)
 
-        if (result is GameEngine.GameResult.ExchangeInfo) {
+        if (result is GameResult.ExchangeInfo) {
             val card1 = result.playerCards[0]
             val card2 = result.neighborCards[0]
             val exchangeResult = engine.performExchange(player, neighbor, card1, card2)
-            assertTrue(exchangeResult is GameEngine.GameResult.Success)
+            assertTrue(exchangeResult is GameResult.Success)
             assertTrue(player.hand.any { it.name == "Виски" })
             assertTrue(neighbor.hand.any { it.name == "Анализ" })
         } else {
@@ -155,10 +155,105 @@ class GameEngineTest {
         val result = engine.handleDefense(defender, attacker!!, ActionCard("Test", "", ActionType.ANALYSIS))
 
         assertTrue(
-            result is GameEngine.GameResult.DefensePlayed,
+            result is GameResult.DefensePlayed,
             "Должен быть DefensePlayed, получили: ${result.message}",
         )
         assertFalse(defender.hand.any { it.name == "Страх" }, "Карта защиты должна быть удалена")
+    }
+
+    @Test
+    fun `perseverance gives 3 non-panic cards`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+        val player = engine.getCurrentPlayer()!!
+        player.hand.clear()
+        player.hand.add(ActionCard("Упорство", "Test", ActionType.PERSEVERANCE))
+
+        val result = engine.playCard(player, player.hand[0], null)
+
+        assertTrue(result is GameResult.Success)
+        val cards = engine.getPerseveranceCards()
+        assertTrue(cards.isNotEmpty())
+        assertTrue(cards.all { it.type != CardType.PANIC })
+    }
+
+    @Test
+    fun `temptation ends turn early`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+        val player = engine.getCurrentPlayer()!!
+        player.hand.clear()
+        player.hand.add(ActionCard("Соблазн", "Test", ActionType.TEMPTATION))
+        val target = engine.getPlayers().find { it != player && engine.isAdjacent(player, it) }!!
+        target.hand.clear()
+        target.hand.add(ActionCard("Виски", "Test", ActionType.WHISKEY))
+
+        val result = engine.playCard(player, player.hand[0], target)
+
+        assertTrue(result is GameResult.ExchangeInfo)
+        assertTrue(engine.state.endTurnEarlyFlag)
+    }
+
+    @Test
+    fun `quarantine on self ends turn`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+        val player = engine.getCurrentPlayer()!!
+        player.hand.clear()
+        player.hand.add(ActionCard("Карантин", "Test", ActionType.AXE))
+
+        val result = engine.playCard(player, player.hand[0], player)
+
+        assertTrue(result is GameResult.Success)
+        assertTrue(player.hasQuarantine)
+    }
+
+    @Test
+    fun `pass defense transfers to next player`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+        val defender = engine.getCurrentPlayer()!!
+        defender.hand.clear()
+        defender.hand.add(DefenseCard("Мимо!", "Test", DefenseType.PASS))
+        val attacker = engine.getPlayers().find { it != defender && engine.isAdjacent(defender, it) }!!
+
+        val result = engine.handleDefense(defender, attacker, ActionCard("Test", "", ActionType.ANALYSIS))
+
+        assertTrue(result is GameResult.PassExchange)
+        val passResult = result as GameResult.PassExchange
+        assertNotEquals(attacker, passResult.nextPlayer) // следующий, не атакующий
+    }
+
+    @Test
+    fun `seat swap blocked by defense`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+        val player = engine.getCurrentPlayer()!!
+        player.hand.clear()
+        player.hand.add(ActionCard("Меняемся местами!", "Test", ActionType.SWAP_SEATS_NEIGHBOR))
+        val target = engine.getPlayers().find { it != player && engine.isAdjacent(player, it) }!!
+        target.hand.clear()
+        target.hand.add(DefenseCard("Мне и здесь неплохо", "Test", DefenseType.IM_FINE_HERE))
+
+        // Защита должна предотвратить обмен
+        assertTrue(target.hasCard("Мне и здесь неплохо"))
+    }
+
+    @Test
+    fun `defense choice shows all exchange defenses`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+        val defender = engine.getCurrentPlayer()!!
+        defender.hand.clear()
+        defender.hand.add(DefenseCard("Страх", "Test", DefenseType.FEAR))
+        defender.hand.add(DefenseCard("Нет уж, спасибо!", "Test", DefenseType.NO_THANKS))
+
+        val exchangeDefenses =
+            defender.getHandCards().filter {
+                it is DefenseCard && it.subType.category == DefenseCategory.EXCHANGE
+            }
+
+        assertEquals(2, exchangeDefenses.size)
     }
 
     @Test

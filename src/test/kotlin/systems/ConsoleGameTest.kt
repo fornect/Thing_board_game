@@ -21,24 +21,24 @@ class ConsoleGameTest {
 
         // Фаза 1: взять карту
         val drawResult = engine.drawCard(player)
-        assertTrue(drawResult is GameEngine.GameResult.Success || drawResult is GameEngine.GameResult.Panic)
+        assertTrue(drawResult is GameResult.Success || drawResult is GameResult.Panic)
 
         // Фаза 2: действие
         val playable = engine.getPlayableCards(player)
         if (playable.isNotEmpty()) {
             val result = engine.playCard(player, playable[0], null)
-            assertTrue(result is GameEngine.GameResult)
+            assertTrue(result is GameResult)
         }
 
         // Фаза 3: обмен
         if (!player.hasQuarantine) {
             val exResult = engine.executeExchange(player)
-            assertTrue(exResult is GameEngine.GameResult)
+            assertTrue(exResult is GameResult)
         }
 
         // Конец хода
         val endResult = engine.endTurn(player)
-        assertTrue(endResult is GameEngine.GameResult.Success)
+        assertTrue(endResult is GameResult.Success)
     }
 
     @Test
@@ -51,7 +51,7 @@ class ConsoleGameTest {
         player.hand.add(ActionCard("Огнемёт", "Test", enums.ActionType.FLAMETHROWER))
 
         val result = engine.playCard(player, player.hand[0], null)
-        assertTrue(result is GameEngine.GameResult.Error)
+        assertTrue(result is GameResult.Error)
         assertTrue(result.message.contains("карантине"))
     }
 

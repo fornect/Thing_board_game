@@ -88,7 +88,7 @@ class ConsoleGame {
         readlnOrNull()
         val drawResult = engine.drawCard(player)
         println(drawResult.message)
-        if (drawResult is GameEngine.GameResult.Panic) {
+        if (drawResult is GameResult.Panic) {
             println("⚠️ Фаза действия пропущена!")
         }
     }
@@ -169,7 +169,7 @@ class ConsoleGame {
         val result = engine.playCard(player, card, target)
         println(result.message)
 
-        if (result is GameEngine.GameResult.ExchangeInfo) {
+        if (result is GameResult.ExchangeInfo) {
             handleExchangeResult(result)
             return Pair(true, true)
         }
@@ -236,7 +236,7 @@ class ConsoleGame {
         return true
     }
 
-    private fun handleExchangeResult(exResult: GameEngine.GameResult.ExchangeInfo) {
+    private fun handleExchangeResult(exResult: GameResult.ExchangeInfo) {
         println("\n😈 СОБЛАЗН! Обмен с ${exResult.neighbor.name}")
         println("Ваши карты:")
         exResult.playerCards.forEachIndexed { i, c -> println("$i - ${c.name}") }
@@ -244,7 +244,10 @@ class ConsoleGame {
         val c1 = readlnOrNull()?.toIntOrNull() ?: 0
         if (c1 !in exResult.playerCards.indices) return
 
-        val receiverDefense = exResult.neighbor.hand.find { it.name in GameEngine.DEFENSE_CARDS }
+        val receiverDefense =
+            exResult.neighbor.getHandCards().find { card ->
+                card is DefenseCard && card.subType.category == DefenseCategory.EXCHANGE
+            }
         if (receiverDefense != null) {
             println("\n🛡️ У ${exResult.neighbor.name} есть защита: ${receiverDefense.name}")
             println("1 - Принять обмен")
@@ -278,13 +281,16 @@ class ConsoleGame {
         val exResult = engine.executeExchange(player)
 
         when (exResult) {
-            is GameEngine.GameResult.ExchangeInfo -> {
+            is GameResult.ExchangeInfo -> {
                 println("Ваши карты:")
                 exResult.playerCards.forEachIndexed { i, c -> println("$i - ${c.name}") }
                 print("Выберите: ")
                 val c1 = readlnOrNull()?.toIntOrNull() ?: 0
 
-                val receiverDefense = exResult.neighbor.hand.find { it.name in GameEngine.DEFENSE_CARDS }
+                val receiverDefense =
+                    exResult.neighbor.getHandCards().find { card ->
+                        card is DefenseCard && card.subType.category == DefenseCategory.EXCHANGE
+                    }
                 if (receiverDefense != null) {
                     println("\n🛡️ У ${exResult.neighbor.name} есть защита: ${receiverDefense.name}")
                     println("1 - Принять обмен")

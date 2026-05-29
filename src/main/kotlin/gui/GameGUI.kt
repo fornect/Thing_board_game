@@ -4,6 +4,7 @@ import data.GameDatabase
 import enums.*
 import model.*
 import systems.GameEngine
+import systems.GameResult
 import java.awt.*
 import javax.swing.*
 import javax.swing.border.*
@@ -25,12 +26,6 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
     private val historyButton = JButton("История игр")
 
     private var turnDialog: JDialog? = null
-    private var actionDone = false
-    private var cardDrawn = false
-    private var panicHappened = false
-    private var exchangeDone = false
-    private var quarantineJustPlaced = false
-
     private var gameStartTime: Long = 0
     private var turnsPlayed = 0
     private var gameOver = false
@@ -135,38 +130,18 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
 
     private fun startNewGame() {
         gameOver = false
-        val dialog = NewGameDialog(this)
-        dialog.isVisible = true
 
-        if (dialog.isConfirmed) {
+        while (true) {
+            val dialog = NewGameDialog(this)
+            dialog.isVisible = true
+
+            if (!dialog.isConfirmed) return
+
             val playerNames = dialog.getPlayerNames()
 
-            // 1. Количество
             if (playerNames.size !in 4..12) {
                 showWarning("Ошибка", "Нужно от 4 до 12 игроков!\nВы ввели: ${playerNames.size}")
-                startNewGame()
-                return
-            }
-
-            // 2. Пустые имена
-            if (playerNames.any { it.isBlank() }) {
-                showWarning("Ошибка", "Имена не могут быть пустыми!")
-                startNewGame()
-                return
-            }
-
-            // 3. Дубликаты
-            if (playerNames.size != playerNames.distinct().size) {
-                showWarning("Ошибка", "Имена не должны повторяться!")
-                startNewGame()
-                return
-            }
-
-            // 4. Длина
-            if (playerNames.any { it.length > 20 }) {
-                showWarning("Ошибка", "Имена не могут быть длиннее 20 символов!")
-                startNewGame()
-                return
+                continue
             }
 
             gameLogArea.text = ""
@@ -178,7 +153,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
             gameStartTime = System.currentTimeMillis()
             turnsPlayed = 0
 
-            resetTurnState()
+            engine.resetTurnState()
             updateDisplay()
             updateButtonStates()
 
@@ -187,11 +162,13 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
             logMessage("=".repeat(60))
 
             showTurnWindow()
+            break
         }
     }
 
     private fun showTurnWindow() {
         if (gameOver) return
+
         val player = engine.getCurrentPlayer() ?: return
 
         turnDialog?.dispose()
@@ -208,38 +185,35 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         val turnLabel = JLabel("🎯 Ход ${engine.getTurnNumber() + 1}: ${player.name}")
         turnLabel.font = Font("Arial", Font.BOLD, 14)
 
-        val roleLabel = JLabel("Роль: ${player.role}")
-        val handLabel = JLabel("Карт в руке: ${player.hand.size}")
-        val cardsText = player.hand.joinToString("<br>• ") { "${it.name} (${it.description})" }
-        val cardsLabel = JLabel("<html>Карты:<br>• $cardsText</html>")
+        val cardsText = player.getHandCards().joinToString("<br>• ") { "${it.name} (${it.description})" }
 
         val phaseDesc =
             when {
-                player.hasQuarantine && quarantineJustPlaced -> "🦠 Вы поставили карантин на себя! Ход завершается"
+                player.hasQuarantine && engine.isQuarantineJustPlaced() -> "🦠 Вы поставили карантин на себя! Ход завершается"
                 player.hasQuarantine -> "🦠 КАРАНТИН — можно только Топор на себя или сброс"
-                !cardDrawn -> "📤 Фаза 1: Взятие карты"
-                panicHappened -> "😱 ПАНИКА! Действие пропущено"
-                !actionDone -> "🎮 Фаза 2: Действие (сыграть или сбросить)"
+                !engine.isCardDrawn() -> "📤 Фаза 1: Взятие карты"
+                engine.isPanicHappened() -> "😱 ПАНИКА! Действие пропущено"
+                !engine.isActionDone() -> "🎮 Фаза 2: Действие (сыграть или сбросить)"
                 else -> "🔄 Фаза 3: Обмен с соседом"
             }
         val phaseDescLabel = JLabel(phaseDesc)
         phaseDescLabel.font = Font("Arial", Font.BOLD, 12)
-        phaseDescLabel.foreground = if (panicHappened) Color.RED else Color.BLUE
+        phaseDescLabel.foreground = if (engine.isPanicHappened()) Color.RED else Color.BLUE
 
         infoPanel.add(turnLabel)
         infoPanel.add(Box.createVerticalStrut(5))
         infoPanel.add(phaseDescLabel)
         infoPanel.add(Box.createVerticalStrut(10))
-        infoPanel.add(roleLabel)
-        infoPanel.add(handLabel)
-        infoPanel.add(cardsLabel)
+        infoPanel.add(JLabel("Роль: ${player.role}"))
+        infoPanel.add(JLabel("Карт в руке: ${player.getHandSize()}"))
+        infoPanel.add(JLabel("<html>Карты:<br>• $cardsText</html>"))
 
         panel.add(infoPanel, BorderLayout.NORTH)
 
-        if (quarantineJustPlaced) {
-            quarantineJustPlaced = false
-            actionDone = true
-            exchangeDone = true
+        if (engine.isQuarantineJustPlaced()) {
+            engine.setQuarantineJustPlaced(false)
+            engine.setActionDone(true)
+            engine.setExchangeDone(true)
             javax.swing.Timer(500) { finishTurn(player) }.apply {
                 isRepeats = false
                 start()
@@ -257,38 +231,45 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         val exchangeTurnButton = JButton("🔄 Фаза 3: Обмен")
 
         if (player.hasQuarantine) {
-            drawButton.isEnabled = !cardDrawn
-            actionButton.isEnabled = cardDrawn
+            drawButton.isEnabled = !engine.isCardDrawn()
+            actionButton.isEnabled = engine.isCardDrawn()
             exchangeTurnButton.isEnabled = false
-            drawButton.text = "📤 Взять карту (карантин)"
-            actionButton.text = "🎮 Топор на себя / Сброс"
-            exchangeTurnButton.text = "🔄 Обмен недоступен (карантин)"
         } else {
-            drawButton.isEnabled = !cardDrawn
-            actionButton.isEnabled = cardDrawn && !actionDone && !panicHappened
-            exchangeTurnButton.isEnabled = cardDrawn && (actionDone || panicHappened) && !exchangeDone
-            drawButton.text = "📤 Фаза 1: Взять карту из колоды"
-            actionButton.text = "🎮 Фаза 2: Действие (сыграть/сбросить)"
-            exchangeTurnButton.text = "🔄 Фаза 3: Обмен с соседом (завершает ход)"
+            drawButton.isEnabled = !engine.isCardDrawn()
+            val cardDrawn = engine.isCardDrawn()
+            val actionDone = engine.isActionDone()
+            val panic = engine.isPanicHappened()
+            val skipPhase = engine.state.skipActionPhase
+
+            println("=== BUTTON STATE ===")
+            println("cardDrawn=$cardDrawn")
+            println("actionDone=$actionDone")
+            println("panic=$panic")
+            println("skipActionPhase=$skipPhase")
+            println("actionButton enabled = ${cardDrawn && !actionDone && !panic}")
+            println("====================")
+
+            actionButton.isEnabled = engine.isCardDrawn() && !engine.isActionDone() && !engine.isPanicHappened()
+            exchangeTurnButton.isEnabled = engine.isCardDrawn() && (engine.isActionDone() || engine.isPanicHappened()) && !engine.isExchangeDone()
         }
 
         drawButton.addActionListener {
             val result = engine.drawCard(player)
             logMessage(result.message)
-            cardDrawn = true
+            engine.setCardDrawn(true)
 
             when (result) {
-                is GameEngine.GameResult.Panic -> {
-                    panicHappened = true
+                is GameResult.Panic -> {
+                    engine.setPanicHappened(true)
                     showMessage("😱 ПАНИКА!", result.message)
                 }
 
-                is GameEngine.GameResult.PanicExchange -> {
-                    panicHappened = true
+                is GameResult.PanicExchange -> {
+                    engine.setPanicHappened(true)
                     handlePanicExchange(result)
                 }
 
-                is GameEngine.GameResult.Error -> logMessage("❌ ${result.message}")
+                is GameResult.Error -> logMessage("❌ ${result.message}")
 
                 else -> {}
             }
@@ -299,13 +280,21 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
 
         actionButton.addActionListener {
             if (gameOver) return@addActionListener
+
             if (player.hasQuarantine) {
                 showQuarantineActions(player)
-                if (actionDone) finishTurn(player)
+                if (engine.isActionDone()) {
+                    finishTurn(player)
+                    return@addActionListener // ← выходим, не обновляем окно
+                }
             } else {
                 showActionDialog(player)
-                if (quarantineJustPlaced) finishTurn(player)
+                if (engine.isExchangeDone() || engine.isQuarantineJustPlaced()) {
+                    finishTurn(player)
+                    return@addActionListener // ← выходим, не обновляем окно
+                }
             }
+
             updateTurnWindow()
             updateDisplay()
         }
@@ -317,8 +306,6 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
             } else {
                 onExchange()
             }
-            updateTurnWindow()
-            updateDisplay()
         }
 
         buttonPanel.add(drawButton)
@@ -331,7 +318,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         turnDialog?.isVisible = true
     }
 
-    private fun handlePanicExchange(panic: GameEngine.GameResult.PanicExchange) {
+    private fun handlePanicExchange(panic: GameResult.PanicExchange) {
         if (gameOver) return
         val player = panic.player
 
@@ -377,7 +364,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
                     val target = panic.availableTargets.first()
 
                     if (card != null) {
-                        val targetCards = target.hand.filter { it.name != "НЕЧТО" }
+                        val targetCards = target.getHandCards().filter { it.name != "НЕЧТО" }
                         if (targetCards.isNotEmpty()) {
                             val targetCard = targetCards.random()
                             engine.performExchange(player, target, card, targetCard)
@@ -394,16 +381,16 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
 
     private fun showQuarantineActions(player: Player) {
         if (gameOver) return
-        val hasAxe = player.hand.any { it.name == "Топор" }
-        val discardable = player.hand.filter { it.name != "НЕЧТО" }
+        val hasAxe = player.hasCard("Топор")
+        val discardable = player.getHandCards().filter { it.name != "НЕЧТО" }
 
         val options = mutableListOf<String>()
-        if (hasAxe) options.add("🪓 Сыграть Топор на себя (снимет карантин)")
-        if (discardable.isNotEmpty()) options.add("🗑️ Сбросить любую карту")
+        if (hasAxe) options.add("🪓 Сыграть Топор на себя")
+        if (discardable.isNotEmpty()) options.add("🗑️ Сбросить карту")
 
         if (options.isEmpty()) {
             showMessage("Карантин", "Нет доступных действий.\nХод будет завершён.")
-            actionDone = true
+            engine.setActionDone(true)
             return
         }
 
@@ -421,7 +408,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
 
         when {
             hasAxe && choice == 0 -> {
-                val axeCard = player.hand.find { it.name == "Топор" }
+                val axeCard = player.getHandCards().find { it.name == "Топор" }
                 if (axeCard != null) {
                     val result = engine.playCard(player, axeCard, player)
                     logMessage(result.message)
@@ -449,7 +436,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
                 }
             }
         }
-        actionDone = true
+        engine.setActionDone(true)
     }
 
     private fun showActionDialog(player: Player) {
@@ -457,7 +444,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         val choice =
             JOptionPane.showOptionDialog(
                 this,
-                "${player.name}, выберите действие:\n\nВаша рука:\n${player.hand.joinToString("\n") { "• ${it.name} (${it.description})" }}",
+                "${player.name}, выберите действие:",
                 "Фаза 2: Действие",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
@@ -466,10 +453,16 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
                 options[0],
             )
         when (choice) {
-            0 -> actionDone = onPlayCard()
-            1 -> actionDone = onDiscardCard()
+            0 -> onPlayCard()
+
+            1 -> {
+                onDiscardCard()
+                engine.setActionDone(true)
+            }
         }
     }
+
+    // ==================== ON PLAY CARD (разбит на методы) ====================
 
     private fun onPlayCard(): Boolean {
         if (gameOver) return false
@@ -486,6 +479,30 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
             return false
         }
 
+        val selectedCard = selectCardToPlay(playableCards) ?: return false
+        val target = selectTargetIfNeeded(player, selectedCard)
+
+        if (needsTarget(selectedCard) && target == null) return false
+
+        return executeCardAction(player, selectedCard, target)
+    }
+
+    private fun needsTarget(card: Card): Boolean {
+        return card.name in
+            listOf(
+                "Огнемёт",
+                "Анализ",
+                "Топор",
+                "Подозрение",
+                "Карантин",
+                "Заколоченная дверь",
+                "Меняемся местами!",
+                "Сматывай удочки!",
+                "Соблазн",
+            )
+    }
+
+    private fun selectCardToPlay(playableCards: List<Card>): Card? {
         val cardNames = playableCards.map { "${it.name} (${it.description})" }.toTypedArray()
         val choice =
             JOptionPane.showInputDialog(
@@ -496,179 +513,196 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
                 null,
                 cardNames,
                 cardNames[0],
-            ) as? String ?: return false
+            ) as? String ?: return null
 
         val idx = cardNames.indexOf(choice)
-        if (idx < 0 || idx >= playableCards.size) return false
+        return if (idx in playableCards.indices) playableCards[idx] else null
+    }
 
-        val selectedCard = playableCards[idx]
+    private fun selectTargetIfNeeded(
+        player: Player,
+        card: Card,
+    ): Player? {
+        if (!needsTarget(card)) return null
 
-        var target: Player? = null
-        val needsTarget =
-            selectedCard.name in
-                listOf(
-                    "Огнемёт",
-                    "Анализ",
-                    "Топор",
-                    "Подозрение",
-                    "Карантин",
-                    "Заколоченная дверь",
-                    "Меняемся местами!",
-                    "Сматывай удочки!",
-                    "Соблазн",
-                )
-
-        if (needsTarget) {
-            val targets = engine.getTargets(player, selectedCard.name)
-            if (targets.isEmpty()) {
-                showMessage("Нет целей", "Нет доступных целей")
-                return false
-            }
-            val targetNames = targets.map { "${it.name} ${if (it.hasQuarantine) "🦠" else ""}" }.toTypedArray()
-            val targetChoice =
-                JOptionPane.showInputDialog(
-                    this,
-                    "Выберите цель для '${selectedCard.name}':",
-                    "Выбор цели",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    targetNames,
-                    targetNames[0],
-                ) as? String ?: return false
-            val targetIdx = targetNames.indexOf(targetChoice)
-            if (targetIdx >= 0) target = targets[targetIdx]
+        val targets = engine.getTargets(player, card.name)
+        if (targets.isEmpty()) {
+            showMessage("Нет целей", "Нет доступных целей")
+            return null
         }
 
-        // УПОРСТВО
-        if (selectedCard.name == "Упорство") {
-            engine.playCard(player, selectedCard, null)
-            logMessage("💪 ${player.name} использует УПОРСТВО!")
+        val targetNames = targets.map { "${it.name} ${if (it.hasQuarantine) "🦠" else ""}" }.toTypedArray()
+        val targetChoice =
+            JOptionPane.showInputDialog(
+                this,
+                "Выберите цель для '${card.name}':",
+                "Выбор цели",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                targetNames,
+                targetNames[0],
+            ) as? String ?: return null
 
-            val drawnCards =
-                listOf(
-                    ActionCard("Огнемёт", "Убить соседа", ActionType.FLAMETHROWER),
-                    ActionCard("Анализ", "Посмотреть руку", ActionType.ANALYSIS),
-                    ActionCard("Топор", "Снять карантин", ActionType.AXE),
-                    ActionCard("Подозрение", "Посмотреть карту", ActionType.SUSPICION),
-                    DefenseCard("Нет уж, спасибо!", "Отказ от обмена", DefenseType.NO_THANKS),
-                    DefenseCard("Страх", "Отказ + просмотр", DefenseType.FEAR),
-                    ObstacleCard("Карантин", "Блок на 3 хода", ObstacleType.QUARANTINE),
-                    ObstacleCard("Заколоченная дверь", "Блок", ObstacleType.BARRICADED_DOOR),
-                ).shuffled().take(3)
+        val targetIdx = targetNames.indexOf(targetChoice)
+        return if (targetIdx >= 0) targets[targetIdx] else null
+    }
 
-            val drawnNames = drawnCards.map { "${it.name} (${it.description})" }.toTypedArray()
-            val keepChoice =
-                JOptionPane.showInputDialog(
-                    this,
-                    "💪 УПОРСТВО!\n\nВзято 3 карты. Выберите одну для сохранения:",
-                    "Упорство",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    drawnNames,
-                    drawnNames[0],
-                ) as? String
+    private fun executeCardAction(
+        player: Player,
+        card: Card,
+        target: Player?,
+    ): Boolean {
+        return when (card.name) {
+            "Упорство" -> handlePerseverance(player, card)
 
-            if (keepChoice != null) {
-                val keepIdx = drawnNames.indexOf(keepChoice)
-                if (keepIdx >= 0) {
-                    val keptCard = drawnCards[keepIdx]
-                    player.hand.add(keptCard)
-                    logMessage("   ✅ Оставлена: ${keptCard.name}")
-                    drawnCards.forEachIndexed { i, card ->
-                        if (i != keepIdx) {
-                            engine.discardCardSilent(player, card)
-                            logMessage("   🗑️ В сброс: ${card.name}")
-                        }
-                    }
-                }
+            "Соблазн" -> handleTemptationCard(player, card, target)
+
+            "Карантин" -> handleQuarantineCard(player, target)
+
+            else -> {
+                engine.setActionDone(true)
+                handleGenericCard(player, card, target)
             }
+        }
+    }
 
-            showMessage("💪 Упорство!", "Одна карта оставлена, две в сброс.\nФаза 2 продолжается.")
+    private fun handlePerseverance(
+        player: Player,
+        card: Card,
+    ): Boolean {
+        val result = engine.playCard(player, card, null)
+        logMessage("💪 ${player.name} использует УПОРСТВО!")
+
+        val drawnCards = engine.getPerseveranceCards()
+        if (drawnCards.isEmpty()) {
+            showMessage("Упорство", "Не удалось взять карты")
             updateDisplay()
             return false
         }
 
-        // СМЕНА МЕСТ — защита "Мне и здесь неплохо"
-        if (selectedCard.name in listOf("Меняемся местами!", "Сматывай удочки!")) {
-            if (target != null && target.hand.any { it.name == "Мне и здесь неплохо" }) {
-                val defenseChoice =
-                    JOptionPane.showOptionDialog(
-                        this,
-                        "${target.name}, ${player.name} хочет поменяться с вами местами!\n\nУ вас есть защита: Мне и здесь неплохо",
-                        "🛡️ Защита от смены мест",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        arrayOf("🛡️ Сыграть защиту", "✅ Согласиться"),
-                        "Согласиться",
-                    )
+        val drawnNames = drawnCards.map { "${it.name} (${it.description})" }.toTypedArray()
+        val keepChoice =
+            JOptionPane.showInputDialog(
+                this,
+                "💪 УПОРСТВО!\n\nВыберите карту для сохранения:",
+                "Упорство",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                drawnNames,
+                drawnNames[0],
+            ) as? String
 
-                if (defenseChoice == 0) {
-                    val defenseCard = target.hand.find { it.name == "Мне и здесь неплохо" }
-                    if (defenseCard != null) {
-                        target.hand.remove(defenseCard)
-                        val newCard = engine.drawCardSilent()
-                        if (newCard != null) target.hand.add(newCard)
-                        engine.playCard(player, selectedCard, target)
-                        logMessage("🏠 ${target.name} использует 'Мне и здесь неплохо' — смена отменена")
-                        showMessage("🏠 Мне и здесь неплохо", "Смена отменена!\nВзята карта: ${newCard?.name ?: "нет"}")
-                        return true
-                    }
-                }
+        if (keepChoice != null) {
+            val keepIdx = drawnNames.indexOf(keepChoice)
+            if (keepIdx >= 0) {
+                engine.confirmPerseverance(player, keepIdx)
+                logMessage("   ✅ Карта сохранена")
             }
-
-            val result = engine.playCard(player, selectedCard, target)
-            logMessage(result.message)
-            showMessage(if (selectedCard.name == "Меняемся местами!") "💺 Смена мест" else "💨 Смена мест", result.message)
-            updateDisplay()
-            return true
         }
 
-        val result = engine.playCard(player, selectedCard, target)
+        showMessage("💪 Упорство!", "Одна карта оставлена, остальные в сброс.\nФаза 2 продолжается.")
+        updateDisplay()
+        return false // НЕ устанавливаем actionDone — можно играть ещё
+    }
+
+    private fun handleSeatSwap(
+        player: Player,
+        card: Card,
+        target: Player?,
+    ): Boolean {
+        if (target != null && target.hasCard("Мне и здесь неплохо")) {
+            val defenseChoice =
+                JOptionPane.showOptionDialog(
+                    this,
+                    "${target.name}, ${player.name} хочет поменяться с вами местами!\n\nУ вас есть защита: Мне и здесь неплохо",
+                    "🛡️ Защита от смены мест",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    arrayOf("🛡️ Сыграть защиту", "✅ Согласиться"),
+                    "Согласиться",
+                )
+
+            if (defenseChoice == 0) {
+                target.removeCardByName("Мне и здесь неплохо")
+                player.removeCardByName(card.name)
+                val newCard = engine.drawSilentSafe(target)
+                if (newCard != null) target.addCard(newCard)
+                logMessage("🏠 ${target.name} использует 'Мне и здесь неплохо' — смена отменена")
+                showMessage("🏠 Мне и здесь неплохо", "Смена отменена!\nВзята карта: ${newCard?.name ?: "нет"}")
+                return true
+            }
+        }
+
+        val result = engine.playCard(player, card, target)
+        logMessage(result.message)
+        showMessage(if (card.name == "Меняемся местами!") "💺 Смена мест" else "💨 Смена мест", result.message)
+        updateDisplay()
+        return true
+    }
+
+    private fun handleTemptationCard(
+        player: Player,
+        card: Card,
+        target: Player?,
+    ): Boolean {
+        val result = engine.playCard(player, card, target)
         logMessage(result.message)
 
-        if (result is GameEngine.GameResult.ExchangeInfo) {
+        if (result is GameResult.ExchangeInfo) {
+            showExchangeDialogFromResult(result)
+        }
+        engine.setExchangeDone(true)
+        engine.setActionDone(true)
+        finishTurn(player)
+        return true
+    }
+
+    private fun handleQuarantineCard(
+        player: Player,
+        target: Player?,
+    ): Boolean {
+        val result = engine.playCard(player, ActionCard("Карантин", "", ActionType.AXE), target)
+        logMessage(result.message)
+
+        if (target == player) {
+            engine.setQuarantineJustPlaced(true)
+            showMessage("🦠 Карантин на себя", "Ход завершается")
+        } else {
+            showMessage("🦠 Карантин", result.message)
+        }
+        updateDisplay()
+        return true
+    }
+
+    private fun handleGenericCard(
+        player: Player,
+        card: Card,
+        target: Player?,
+    ): Boolean {
+        val result = engine.playCard(player, card, target)
+        logMessage(result.message)
+
+        if (result is GameResult.ExchangeInfo) {
             showExchangeDialogFromResult(result)
             finishTurn(player)
             return true
         }
 
-        when (selectedCard.name) {
+        when (card.name) {
             "Огнемёт" -> showMessage("🔥 Огнемёт", result.message)
-
             "Анализ" -> showMessage("🔍 Анализ", result.message)
-
             "Топор" -> showMessage("🪓 Топор", result.message)
-
             "Подозрение" -> showMessage("🔎 Подозрение", result.message)
-
             "Виски" -> showMessage("🥃 Виски", result.message)
-
             "Гляди по сторонам" -> showMessage("👀 Направление", result.message)
-
-            "Карантин" -> {
-                if (target == player) {
-                    quarantineJustPlaced = true
-                    showMessage("🦠 Карантин на себя", "Ход завершается")
-                } else {
-                    showMessage("🦠 Карантин", result.message)
-                }
-            }
-
             "Заколоченная дверь" -> showMessage("🚪 Дверь", result.message)
-
-            else -> showMessage(selectedCard.name, result.message)
+            else -> showMessage(card.name, result.message)
         }
-
-        if (selectedCard.name == "Карантин" && target == player) quarantineJustPlaced = true
-        if (selectedCard.name == "Соблазн") {
-            finishTurn(player)
-            return true
-        }
-
         updateDisplay()
         return true
     }
+    // ==================== ОСТАЛЬНЫЕ МЕТОДЫ ====================
 
     private fun onDiscardCard(): Boolean {
         val player = engine.getCurrentPlayer() ?: return false
@@ -702,24 +736,24 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         val player = engine.getCurrentPlayer() ?: return
         val result = engine.executeExchange(player)
 
-        if (result is GameEngine.GameResult.ExchangeInfo) {
+        if (result is GameResult.ExchangeInfo) {
             showExchangeDialogFromResult(result)
         } else {
             logMessage(result.message)
             showWarning("Обмен невозможен", result.message)
         }
-        exchangeDone = true
+        engine.setExchangeDone(true)
         finishTurn(player)
     }
 
-    private fun showExchangeDialogFromResult(exInfo: GameEngine.GameResult.ExchangeInfo) {
+    private fun showExchangeDialogFromResult(exInfo: GameResult.ExchangeInfo) {
         if (gameOver) return
         val player = exInfo.player
         val neighbor = exInfo.neighbor
 
         val card1 =
             showCardSelectionDialog(
-                "${player.name}, выберите карту для ${neighbor.name}:",
+                "${player.name}, выберите карту для предложения ${neighbor.name}:",
                 exInfo.playerCards,
                 player.role,
             ) ?: return
@@ -729,43 +763,65 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
             return
         }
 
-        val receiverDefense = neighbor.hand.find { it.name in GameEngine.DEFENSE_CARDS }
+        // Проверяем ВСЕ защиты от обмена у соседа
+        val defenseCards =
+            neighbor.getHandCards().filter {
+                it is DefenseCard && it.subType.category == DefenseCategory.EXCHANGE
+            }
 
-        if (receiverDefense != null) {
+        if (defenseCards.isNotEmpty()) {
+            val defenseNames = defenseCards.map { it.name }
+            val options = mutableListOf<String>()
+            options.addAll(defenseNames)
+            options.add("✅ Принять обмен")
+
             val defenseChoice =
                 JOptionPane.showOptionDialog(
                     this,
-                    "${neighbor.name}, предлагают: ${card1.name}\nУ вас есть: ${receiverDefense.name}",
-                    "🛡️ Защита",
-                    JOptionPane.YES_NO_OPTION,
+                    "${neighbor.name}, вам предлагают: ${card1.name}\n\nУ вас есть защита: ${defenseNames.joinToString(", ")}\n\nЧто хотите сделать?",
+                    "🛡️ Защита доступна",
+                    JOptionPane.DEFAULT_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
-                    arrayOf("Сыграть защиту", "Принять обмен"),
-                    "Принять обмен",
+                    options.toTypedArray(),
+                    options[0],
                 )
 
-            if (defenseChoice == 0) {
-                neighbor.hand.remove(receiverDefense)
-                val defResult = engine.handleDefense(neighbor, player, card1)
+            if (defenseChoice in defenseNames.indices) {
+                // Игрок выбрал конкретную защиту
+                val selectedDefense = defenseCards[defenseChoice]
+                val defResult = engine.handleDefense(neighbor, player, card1, selectedDefense)
                 logMessage(defResult.message)
 
-                if (defResult is GameEngine.GameResult.PassExchange) {
+                if (defResult is GameResult.PassExchange) {
                     showMessage("➡️ Мимо!", defResult.message)
-                    val nextResult = engine.executeExchange(defResult.nextPlayer)
-                    if (nextResult is GameEngine.GameResult.ExchangeInfo) {
-                        showExchangeDialogFromResult(nextResult)
+                    // Обмен передаётся: attacker (тот же) меняется с nextPlayer
+                    val attacker = defResult.attacker
+                    val nextPlayer = defResult.nextPlayer
+
+                    // Даём карты для обмена между attacker и nextPlayer
+                    val p1Cards = attacker.getHandCards().filter { it.name != "НЕЧТО" && (attacker.role == Role.THING || it.name != "Заражение!") }
+                    val p2Cards = nextPlayer.getHandCards().filter { it.name != "НЕЧТО" && (nextPlayer.role == Role.THING || it.name != "Заражение!") }
+
+                    if (p1Cards.isEmpty() || p2Cards.isEmpty()) {
+                        showWarning("Обмен", "Недостаточно карт для обмена")
+                        return
                     }
+
+                    val fakeExchangeInfo = GameResult.ExchangeInfo(attacker, nextPlayer, p1Cards, p2Cards)
+                    showExchangeDialogFromResult(fakeExchangeInfo)
                     return
                 }
 
-                showMessage("🛡️ Защита", defResult.message)
+                showMessage("🛡️ ${selectedDefense.name}", defResult.message)
                 return
             }
+            // Если choice == "✅ Принять обмен" — продолжаем обмен
         }
 
         val card2 =
             showCardSelectionDialog(
-                "${neighbor.name}, выберите карту для ${player.name}:",
+                "${neighbor.name}, выберите карту для передачи ${player.name}:",
                 exInfo.neighborCards,
                 neighbor.role,
             ) ?: return
@@ -830,8 +886,8 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         if (gameOver) return
         turnsPlayed++
         val result = engine.endTurn(player)
+        engine.resetTurnState()
         logMessage(result.message)
-        resetTurnState()
         turnDialog?.dispose()
         updateDisplay()
 
@@ -869,7 +925,7 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         logMessage(message)
         logMessage("=".repeat(60))
 
-        resetTurnState()
+        engine.resetTurnState()
         updateDisplay()
 
         JOptionPane.showMessageDialog(this, message, "Игра окончена!", JOptionPane.INFORMATION_MESSAGE)
@@ -877,14 +933,6 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         statusLabel.text = "Игра завершена"
         phaseLabel.text = ""
         logMessage("📋 Нажмите 'Новая игра' для старта")
-    }
-
-    private fun resetTurnState() {
-        cardDrawn = false
-        actionDone = false
-        panicHappened = false
-        exchangeDone = false
-        quarantineJustPlaced = false
     }
 
     private fun updateTurnWindow() {
@@ -899,111 +947,168 @@ class GameGUI : JFrame("НЕЧТО: Из Глубокой Бездны") {
         playerListPanel.removeAll()
 
         for (player in players) {
-            val isCurrent = player == currentPlayer
-            val borderColor =
-                when {
-                    !player.isAlive -> Color.GRAY
-                    isCurrent -> Color.BLUE
-                    player.role == Role.THING -> Color.RED
-                    player.role == Role.INFECTED -> Color.ORANGE
-                    else -> Color.BLACK
-                }
-
-            val pp =
-                JPanel(BorderLayout()).apply {
-                    border = CompoundBorder(LineBorder(borderColor, if (isCurrent) 3 else 1), EmptyBorder(5, 5, 5, 5))
-                    maximumSize = Dimension(270, 75)
-                    background =
-                        when {
-                            isCurrent -> Color(230, 240, 255)
-                            !player.isAlive -> Color(240, 240, 240)
-                            else -> Color.WHITE
-                        }
-                    isOpaque = true
-                }
-
-            val icon =
-                when {
-                    !player.isAlive -> "💀"
-                    player.role == Role.THING -> "👾"
-                    player.role == Role.INFECTED -> "🧟"
-                    else -> "👤"
-                }
-            pp.add(JLabel("$icon ${player.name}").apply { font = Font("Arial", Font.BOLD, if (isCurrent) 14 else 12) }, BorderLayout.NORTH)
-
-            val ip =
-                JPanel().apply {
-                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                    isOpaque = false
-                }
-            ip.add(
-                JLabel(
-                    when {
-                        !player.isAlive -> "💀 Мёртв"
-                        player.hasQuarantine -> "🦠 Карантин (${player.quarantineTurns})"
-                        else -> "✅ Жив"
-                    },
-                ),
-            )
-            ip.add(
-                JLabel(
-                    when (player.role) {
-                        Role.HUMAN -> "👤 Человек"
-                        Role.THING -> "👾 НЕЧТО"
-                        Role.INFECTED -> "🧟 Заражённый"
-                    },
-                ),
-            )
-            ip.add(JLabel("🎴 ${player.hand.size} карт"))
-
-            pp.add(ip, BorderLayout.CENTER)
-            playerListPanel.add(pp)
+            val playerPanel = buildPlayerPanel(player, player == currentPlayer)
+            playerListPanel.add(playerPanel)
             playerListPanel.add(Box.createVerticalStrut(5))
         }
 
         directionLabel.text = if (engine.getDirection() == 1) "↻ По часовой" else "↺ Против"
-        val cp = engine.getCurrentPlayer()
-        if (cp != null) {
-            statusLabel.text = "Ход ${engine.getTurnNumber() + 1}: ${cp.name} (${cp.role})"
-            phaseLabel.text =
-                when {
-                    cp.hasQuarantine -> "🦠 Карантин"
-                    !cardDrawn -> "📤 Фаза 1"
-                    panicHappened -> "😱 Паника"
-                    !actionDone -> "🎮 Фаза 2"
-                    else -> "🔄 Фаза 3"
-                }
-        }
+        updateStatusLabels(currentPlayer)
 
         playerListPanel.revalidate()
         playerListPanel.repaint()
     }
 
-    private fun updateButtonStates() {}
+    private fun buildPlayerPanel(
+        player: Player,
+        isCurrent: Boolean,
+    ): JPanel {
+        val borderColor = getBorderColor(player, isCurrent)
+        val icon = getPlayerIcon(player)
+        val bgColor = getBackgroundColor(player, isCurrent)
+
+        val playerPanel =
+            JPanel(BorderLayout()).apply {
+                border = CompoundBorder(LineBorder(borderColor, if (isCurrent) 3 else 1), EmptyBorder(5, 5, 5, 5))
+                maximumSize = Dimension(270, 75)
+                background = bgColor
+                isOpaque = true
+            }
+
+        val nameLabel =
+            JLabel("$icon ${player.name}").apply {
+                font = Font("Arial", Font.BOLD, if (isCurrent) 14 else 12)
+            }
+
+        val infoPanel = buildPlayerInfoPanel(player)
+
+        playerPanel.add(nameLabel, BorderLayout.NORTH)
+        playerPanel.add(infoPanel, BorderLayout.CENTER)
+
+        return playerPanel
+    }
+
+    private fun getPlayerStatus(player: Player): String {
+        return when {
+            !player.isAlive -> "💀 Мёртв"
+            player.hasQuarantine -> "🦠 Карантин (${player.quarantineTurns})"
+            else -> "✅ Жив"
+        }
+    }
+
+    private fun getPlayerRole(player: Player): String {
+        return when (player.role) {
+            Role.HUMAN -> "👤 Человек"
+            Role.THING -> "👾 НЕЧТО"
+            Role.INFECTED -> "🧟 Заражённый"
+        }
+    }
+
+    private fun getPlayerIcon(player: Player): String {
+        return when {
+            !player.isAlive -> "💀"
+            else -> "👤"
+        }
+    }
+
+    private fun getBorderColor(
+        player: Player,
+        isCurrent: Boolean,
+    ): Color {
+        return when {
+            !player.isAlive -> Color.GRAY
+            isCurrent -> Color.BLUE
+            else -> Color.BLACK
+        }
+    }
+
+    private fun buildPlayerInfoPanel(player: Player): JPanel {
+        return JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            isOpaque = false
+            add(JLabel(getPlayerStatus(player)))
+            add(JLabel("🎴 ${player.getHandSize()} карт"))
+        }
+    }
+
+    private fun updateStatusLabels(currentPlayer: Player?) {
+        if (currentPlayer != null) {
+            val roleText =
+                when (currentPlayer.role) {
+                    Role.HUMAN -> "👤 Человек"
+                    Role.THING -> "👾 НЕЧТО"
+                    Role.INFECTED -> "🧟 Заражённый"
+                }
+            statusLabel.text = "Ход ${engine.getTurnNumber() + 1}: ${currentPlayer.name} ($roleText)"
+            phaseLabel.text =
+                when {
+                    currentPlayer.hasQuarantine -> "🦠 Карантин"
+                    !engine.isCardDrawn() -> "📤 Фаза 1"
+                    engine.isPanicHappened() -> "😱 Паника"
+                    !engine.isActionDone() -> "🎮 Фаза 2"
+                    else -> "🔄 Фаза 3"
+                }
+        }
+    }
+
+    private fun getBackgroundColor(
+        player: Player,
+        isCurrent: Boolean,
+    ): Color {
+        return when {
+            isCurrent -> Color(230, 240, 255)
+            !player.isAlive -> Color(240, 240, 240)
+            else -> Color.WHITE
+        }
+    }
+
+    private fun updateButtonStates() {
+        val gameActive = engine.getCurrentPlayer() != null && !gameOver
+        startButton.isEnabled = !gameActive
+        statsButton.isEnabled = true
+        registerButton.isEnabled = true
+        historyButton.isEnabled = true
+    }
 
     private fun showStats() {
         val stats = database.getStats()
         val sb = StringBuilder()
         sb.append("Игр: ${stats.totalGames} | Люди: ${stats.humanWins} | НЕЧТО: ${stats.thingWins}\n")
-        showMessage("Статистика", sb.toString())
+        showInfoDialog("Статистика", sb.toString())
     }
 
     private fun showRegistry() {
         val players = database.getAllPlayers()
         val sb = StringBuilder()
-        players.forEach { player ->
-            sb.append("${player[0]}: игр ${player[1]}, побед ${player[2]}\n")
+        if (players.isEmpty()) {
+            sb.append("Реестр пуст.")
+        } else {
+            players.forEach { sb.append("${it[0]}: игр ${it[1]}, побед ${it[2]}\n") }
         }
-        showMessage("Реестр", sb.toString().ifEmpty { "Пусто" })
+        showInfoDialog("Реестр", sb.toString())
     }
 
     private fun showHistory() {
         val history = database.getGameHistory(20)
         val sb = StringBuilder()
-        history.forEach { game ->
-            sb.append("Игра #${game[0]} | ${(game[3] as String).take(16)} | ${game[1]}\n")
+        if (history.isEmpty()) {
+            sb.append("История пуста.")
+        } else {
+            history.forEach { sb.append("Игра #${it[0]} | ${(it[3] as String).take(16)} | ${it[1]}\n") }
         }
-        showMessage("История", sb.toString().ifEmpty { "Пусто" })
+        showInfoDialog("История", sb.toString())
+    }
+
+    private fun showInfoDialog(
+        title: String,
+        message: String,
+    ) {
+        val textArea =
+            JTextArea(message).apply {
+                isEditable = false
+                font = Font("Monospaced", Font.PLAIN, 12)
+            }
+        JOptionPane.showMessageDialog(this, JScrollPane(textArea), title, JOptionPane.INFORMATION_MESSAGE)
     }
 
     fun logMessage(message: String) {

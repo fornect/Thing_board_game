@@ -58,7 +58,7 @@ class IntegrationTest {
                 human.hand[0],
             )
 
-        assertTrue(result is GameEngine.GameResult.Success)
+        assertTrue(result is GameResult.Success)
         assertEquals(Role.INFECTED, human.role)
     }
 
@@ -78,7 +78,7 @@ class IntegrationTest {
         engine.playCard(p1, p1.hand.find { it.name == "Заколоченная дверь" }!!, p2)
 
         val exResult = engine.executeExchange(p1)
-        assertTrue(exResult is GameEngine.GameResult.Error)
+        assertTrue(exResult is GameResult.Error)
         assertTrue(exResult.message.contains("Заколоченная дверь"))
     }
 
@@ -93,7 +93,7 @@ class IntegrationTest {
 
         val result = engine.playCard(player, player.hand[0], player)
 
-        assertTrue(result is GameEngine.GameResult.Success)
+        assertTrue(result is GameResult.Success)
         assertFalse(player.hasQuarantine)
     }
 }

@@ -90,4 +90,32 @@ class SystemTest {
 
         assertFalse(player.hasQuarantine)
     }
+
+    @Test
+    fun `full game with temptation and perseverance`() {
+        val engine = GameEngine()
+        engine.setupGame(listOf("Анна", "Борис", "Вика", "Глеб"))
+
+        var turnsPlayed = 0
+        while (turnsPlayed < 10 && engine.checkVictory() == null) {
+            val player = engine.getCurrentPlayer() ?: break
+            if (player.isAlive) {
+                engine.drawCard(player)
+                val playable = engine.getPlayableCards(player)
+                if (playable.isNotEmpty()) {
+                    val card = playable.first()
+                    val targets = engine.getTargets(player, card.name)
+                    engine.playCard(player, card, if (targets.isNotEmpty()) targets.first() else null)
+                }
+                if (!player.hasQuarantine) {
+                    engine.executeExchange(player)
+                }
+            }
+            engine.endTurn(player)
+            turnsPlayed++
+        }
+
+        val alive = engine.getPlayers().filter { it.isAlive }
+        assertTrue(alive.isNotEmpty())
+    }
 }

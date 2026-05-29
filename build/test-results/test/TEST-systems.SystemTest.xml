@@ -1,10 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="systems.SystemTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-05-28T16:15:17.380Z" hostname="fornect-v15xv17xrnx" time="0.004">
+<testsuite name="systems.SystemTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-05-29T01:19:10.079Z" hostname="fornect-v15xv17xrnx" time="0.008">
   <properties/>
-  <testcase name="thing wins when all infected()" classname="systems.SystemTest" time="0.0"/>
+  <testcase name="full game with temptation and perseverance()" classname="systems.SystemTest" time="0.002"/>
+  <testcase name="thing wins when all infected()" classname="systems.SystemTest" time="0.001"/>
   <testcase name="complete game produces valid state()" classname="systems.SystemTest" time="0.002"/>
   <testcase name="humans win when thing is killed()" classname="systems.SystemTest" time="0.0"/>
-  <testcase name="quarantine lasts 3 player turns()" classname="systems.SystemTest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="quarantine lasts 3 player turns()" classname="systems.SystemTest" time="0.001"/>
+  <system-out><![CDATA[DEBUG resetTurnState: actionDone was false
+DEBUG resetTurnState: actionDone now false
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG resetTurnState: actionDone was false
+DEBUG resetTurnState: actionDone now false
+DEBUG resetTurnState: actionDone was false
+DEBUG resetTurnState: actionDone now false
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: skipActionPhase=false, player=Вика
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Дима
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Дима
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Анна
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG resetTurnState: actionDone was false
+DEBUG resetTurnState: actionDone now false
+DEBUG resetTurnState: actionDone was false
+DEBUG resetTurnState: actionDone now false
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: skipActionPhase=false, player=Вика
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Вика
+DEBUG drawCard: skipActionPhase=false, player=Борис
+DEBUG drawCard: skipActionPhase=false, player=Глеб
+DEBUG drawCard: skipActionPhase=false, player=Вика
+DEBUG drawCard: PANIC! skipActionPhase set to true
+DEBUG drawCard: skipActionPhase=false, player=Борис
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

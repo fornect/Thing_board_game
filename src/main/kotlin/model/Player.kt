@@ -8,17 +8,11 @@ class Player(
     val id: String = UUID.randomUUID().toString(),
 ) {
     var role: Role = Role.HUMAN
-
     val hand = mutableListOf<Card>()
-
     var isAlive: Boolean = true
-
     var hasQuarantine: Boolean = false
-
     var quarantineTurns: Int = 0
-
     var hasBarricade: Boolean = false
-
     var canRefuseExchange: Boolean = false
     var isSabotaged: Boolean = false
     var isSkipped: Boolean = false
@@ -41,9 +35,7 @@ class Player(
     fun decreaseQuarantine() {
         if (hasQuarantine) {
             quarantineTurns--
-            if (quarantineTurns <= 0) {
-                removeQuarantine()
-            }
+            if (quarantineTurns <= 0) removeQuarantine()
         }
     }
 
@@ -56,6 +48,24 @@ class Player(
     }
 
     fun hasCard(name: String): Boolean = hand.any { it.name == name }
+
+    fun addCard(card: Card) {
+        hand.add(card)
+    }
+
+    fun removeCard(card: Card): Boolean {
+        return hand.remove(card)
+    }
+
+    fun removeCardByName(name: String): Boolean {
+        return hand.removeAll { it.name == name }
+    }
+
+    fun getHandCards(): List<Card> = hand.toList()
+
+    fun getHandSize(): Int = hand.size
+
+    fun getHandAsString(): String = hand.joinToString { it.name }
 
     override fun toString(): String {
         val icon =
